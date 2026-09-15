@@ -5,7 +5,7 @@ import { Package, MapPin, LogOut, Pencil } from "lucide-react";
 
 export default async function ProfilePage() {
   const response = await getme();
-cd
+
   if (!response.success || !response.user) {
     redirect("/sign-in");
   }

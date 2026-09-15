@@ -1,120 +1,139 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 
-const slides = [
+const defaultSlides = [
   {
     eyebrow: "Summer Collection 2026",
     titleStart: "Where Comfort",
     titleItalic: "Meets Craft",
     description:
-      "Scandinavian-inspired furniture for modern living. Curated pieces that endure seasons.",
+      "Scandinavian-inspired solid wood furniture for modern living. Curated pieces built to endure generations.",
     primaryCta: "Shop Collection",
-    secondaryCta: "View Lookbook",
+    primaryHref: "/store",
+    secondaryCta: "Our Story",
+    secondaryHref: "/about",
     image:
-      "https://images.unsplash.com/photo-1758448511322-8bfc73daf606?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=80",
   },
   {
-    eyebrow: "Bedroom Edit",
+    eyebrow: "Artisan Bedroom Edit",
     titleStart: "Rest,",
     titleItalic: "Reimagined",
     description:
-      "Soft textures and calm tones for a bedroom that feels like a retreat.",
+      "Organic textures, warm walnut woods, and calm tones for a bedroom that feels like a tranquil sanctuary.",
     primaryCta: "Shop Bedroom",
-    secondaryCta: "View Lookbook",
+    primaryHref: "/store?room=bedroom",
+    secondaryCta: "View All Products",
+    secondaryHref: "/store",
     image:
-      "https://images.unsplash.com/photo-1748679979601-dc9ec43d900d?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1540518614846-7ede433c4550?auto=format&fit=crop&w=1600&q=80",
   },
   {
-    eyebrow: "New Arrivals",
+    eyebrow: "Dining & Living Space",
     titleStart: "Gather Around",
-    titleItalic: "Good Wood",
+    titleItalic: "Solid Wood",
     description:
-      "Solid-wood dining sets built for long dinners and longer conversations.",
-    primaryCta: "Shop Dining",
-    secondaryCta: "View Lookbook",
+      "Handcrafted dining tables and plush seating built for long dinners and unforgettable conversations.",
+    primaryCta: "Explore Living",
+    primaryHref: "/store?category=sofas",
+    secondaryCta: "Get in Touch",
+    secondaryHref: "/contact",
     image:
-      "https://images.unsplash.com/photo-1519643381401-22c77e60520e?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1519643381401-22c77e60520e?auto=format&fit=crop&w=1600&q=80",
   },
 ];
 
-export default function HeroCarousel() {
+export default function HeroCarousel({ slides = defaultSlides }) {
   const [active, setActive] = useState(0);
 
-  const goTo = useCallback((index) => {
-    setActive((index + slides.length) % slides.length);
-  }, []);
+  const activeSlides = slides && slides.length > 0 ? slides : defaultSlides;
+
+  const goTo = useCallback(
+    (index) => {
+      setActive((index + activeSlides.length) % activeSlides.length);
+    },
+    [activeSlides.length]
+  );
 
   useEffect(() => {
-    const timer = setInterval(() => goTo(active + 1), 6000);
+    const timer = setInterval(() => goTo(active + 1), 6500);
     return () => clearInterval(timer);
   }, [active, goTo]);
 
-  const slide = slides[active];
+  const slide = activeSlides[active] || activeSlides[0];
 
   return (
-    <section className="relative mx-auto mt-6 max-w-7xl overflow-hidden rounded-3xl px-0 sm:px-6 lg:px-10">
-      <div className="relative h-[420px] w-full overflow-hidden rounded-3xl sm:h-[400px]">
+    <section className="relative mx-auto mt-4 sm:mt-6 max-w-7xl px-4 sm:px-6 lg:px-10">
+      <div className="relative h-[480px] sm:h-[460px] md:h-[500px] w-full overflow-hidden rounded-3xl bg-stone-900 shadow-xl">
         {/* Background image */}
         <img
           key={slide.image}
           src={slide.image}
           alt={slide.titleStart}
-          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
+          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 brightness-90"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-stone-900/70 via-stone-900/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-stone-950/85 via-stone-900/50 to-transparent" />
 
         {/* Content */}
-        <div className="relative flex h-full max-w-xl flex-col justify-center gap-4 px-8 sm:px-12">
-          <p className="text-xs font-semibold uppercase tracking-widest text-amber-400">
+        <div className="relative z-10 flex h-full max-w-xl flex-col justify-center gap-4 px-6 sm:px-12 md:px-16">
+          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-amber-400">
             {slide.eyebrow}
-          </p>
-          <h1 className="text-4xl font-semibold leading-tight text-white sm:text-5xl">
+          </span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight text-white">
             {slide.titleStart}{" "}
-            <span className="font-serif italic text-amber-300">
+            <span className="font-serif italic font-normal text-amber-300">
               {slide.titleItalic}
             </span>
           </h1>
-          <p className="max-w-sm text-sm leading-relaxed text-stone-200 sm:text-base">
+          <p className="max-w-md text-xs sm:text-sm md:text-base leading-relaxed text-stone-200">
             {slide.description}
           </p>
 
-          <div className="mt-3 flex items-center gap-4">
-            <button className="rounded-full bg-amber-700 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-amber-600">
-              {slide.primaryCta}
-            </button>
-            <button className="text-sm font-medium text-white underline underline-offset-4 transition-colors hover:text-amber-300">
-              {slide.secondaryCta}
-            </button>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <Link
+              href={slide.primaryHref || "/store"}
+              className="inline-flex items-center gap-2 rounded-full bg-amber-700 px-6 py-3 text-xs sm:text-sm font-medium text-white transition hover:bg-amber-800 shadow-md"
+            >
+              <span>{slide.primaryCta || "Shop Collection"}</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href={slide.secondaryHref || "/about"}
+              className="text-xs sm:text-sm font-medium text-white underline underline-offset-4 transition hover:text-amber-300"
+            >
+              {slide.secondaryCta || "Learn More"}
+            </Link>
           </div>
         </div>
 
-        {/* Arrows */}
+        {/* Navigation Arrows */}
         <button
           onClick={() => goTo(active - 1)}
           aria-label="Previous slide"
-          className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-stone-900/50 text-white backdrop-blur-sm transition-colors hover:bg-stone-900/70"
+          className="absolute left-3 sm:left-5 top-1/2 flex h-9 w-9 sm:h-11 sm:w-11 -translate-y-1/2 items-center justify-center rounded-full bg-stone-900/60 text-white backdrop-blur-md transition hover:bg-amber-700 z-20 cursor-pointer"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
         <button
           onClick={() => goTo(active + 1)}
           aria-label="Next slide"
-          className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-stone-900/50 text-white backdrop-blur-sm transition-colors hover:bg-stone-900/70"
+          className="absolute right-3 sm:right-5 top-1/2 flex h-9 w-9 sm:h-11 sm:w-11 -translate-y-1/2 items-center justify-center rounded-full bg-stone-900/60 text-white backdrop-blur-md transition hover:bg-amber-700 z-20 cursor-pointer"
         >
           <ChevronRight className="h-5 w-5" />
         </button>
 
-        {/* Dots */}
-        <div className="absolute bottom-6 left-8 flex items-center gap-2 sm:left-12">
-          {slides.map((_, index) => (
+        {/* Indicators */}
+        <div className="absolute bottom-6 left-6 sm:left-12 z-20 flex items-center gap-2">
+          {activeSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goTo(index)}
               aria-label={`Go to slide ${index + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                index === active ? "w-6 bg-amber-500" : "w-3 bg-white/50"
+              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                index === active ? "w-7 bg-amber-500" : "w-2.5 bg-white/40 hover:bg-white/70"
               }`}
             />
           ))}
