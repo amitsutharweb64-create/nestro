@@ -1,38 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Check } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/redux/features/cartSlice";
-  
-export default function CartBtn({ product, onAddToCart }) {       
-    
-    const dispatcher = useDispatch();   
-      
-    function carthandler(){
-      dispatcher(
-   addToCart({
-    _id: product._id,
-    name: product.title,
-    slug: product.slug,
-    salePrice: product.salePrice,
-    originalPrice: product.price,
-    thumbnail: product.thumbnail,
-    qty: 1,
-  })
-);
-    }
 
+export default function CartBtn({ product, onAddToCart }) {
+  const dispatcher = useDispatch();
   const [isAdding, setIsAdding] = useState(false);
 
-  const handleAddToCart = () => {
+  function carthandler() {
+    dispatcher(
+      addToCart({
+        _id: product._id,
+        name: product.title,
+        slug: product.slug,
+        salePrice: product.salePrice,
+        originalPrice: product.price,
+        thumbnail: product.thumbnail,
+        qty: 1,
+      })
+    );
+  }
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsAdding(true);
     carthandler();
     onAddToCart?.(product);
 
     setTimeout(() => {
       setIsAdding(false);
-    }, 800);
+    }, 900);
   };
 
   return (
@@ -40,11 +40,23 @@ export default function CartBtn({ product, onAddToCart }) {
       type="button"
       onClick={handleAddToCart}
       disabled={isAdding}
-      className="flex w-full items-center justify-center gap-2 rounded-xl bg-stone-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-70"
+      className={`flex w-full items-center justify-center gap-1.5 sm:gap-2 rounded-xl py-2 px-2 sm:py-2.5 sm:px-4 text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 disabled:cursor-not-allowed ${
+        isAdding
+          ? "bg-emerald-700 text-white"
+          : "bg-stone-900 text-white hover:bg-amber-700 shadow-xs"
+      }`}
     >
-      <ShoppingCart className="h-4 w-4" />
-
-      {isAdding ? "Added to Cart" : "Add to Cart"}
+      {isAdding ? (
+        <>
+          <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" strokeWidth={2.5} />
+          <span className="truncate">Added</span>
+        </>
+      ) : (
+        <>
+          <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" strokeWidth={2} />
+          <span className="truncate">Add to Cart</span>
+        </>
+      )}
     </button>
   );
 }

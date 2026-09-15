@@ -1,8 +1,7 @@
 import StoreFilters from "@/components/website/store/Storefilters";
 import StoreHero from "@/components/website/store/StoreHero";
-import StoreOfferBanner from "@/components/website/store/Storeofferbanner";
-import StorePagination from "@/components/website/store/Storepageination";
 import StoreToolbar from "@/components/website/store/StoreToolbar";
+import { StoreFilterProvider } from "@/components/website/store/StoreFilterContext";
 import { fetchCategory, fetchRooms } from "@/api/api";
 
 export default async function Layout({ children }) {
@@ -19,22 +18,26 @@ export default async function Layout({ children }) {
     : [];
 
   return (
-    <>
+    <StoreFilterProvider categories={categories} roomTypes={roomTypes}>
       <StoreHero />
-      <section className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
-        <div className="flex flex-col gap-10 lg:flex-row">
+      <section
+        id="store-products"
+        className="mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-10 lg:px-10 lg:py-12"
+      >
+        <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
+          {/* Filters: Desktop sidebar + Mobile drawer modal */}
           <StoreFilters
             categories={categories}
             roomTypes={roomTypes}
           />
 
-          <div className="flex-1">
+          {/* Main Product Catalog Area */}
+          <div className="min-w-0 flex-1">
             <StoreToolbar />
             {children}
-         
           </div>
         </div>
       </section>
-    </>
+    </StoreFilterProvider>
   );
 }

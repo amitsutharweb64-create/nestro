@@ -4,16 +4,15 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 function FilterCheckbox({ label, checked, onChange }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between py-1.5 text-sm">
-      <span className="flex items-center gap-2.5 text-stone-700">
+    <label className="flex cursor-pointer items-center justify-between py-2 text-sm select-none group">
+      <span className="flex items-center gap-3 text-stone-700 transition group-hover:text-stone-900">
         <input
           type="checkbox"
           checked={checked}
           onChange={onChange}
-          className="h-4 w-4 rounded border-stone-300 text-amber-700 focus:ring-amber-600"
+          className="h-4 w-4 rounded border-stone-300 text-amber-700 focus:ring-amber-600 cursor-pointer accent-amber-700"
         />
-
-        {label}
+        <span className={checked ? "font-medium text-amber-900" : ""}>{label}</span>
       </span>
     </label>
   );
@@ -50,12 +49,12 @@ export default function AvailabilityFilter() {
   };
 
   return (
-    <div className="mt-5 border-t border-stone-200 pt-5">
-      <h3 className="text-sm font-medium text-stone-900">
+    <div className="border-t border-stone-200 pt-5">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-900 mb-2">
         Availability
       </h3>
 
-      <div className="mt-2">
+      <div className="space-y-0.5 mt-2">
         <FilterCheckbox
           label="In Stock"
           checked={selectedStock === "true"}

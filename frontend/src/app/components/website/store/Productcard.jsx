@@ -8,7 +8,7 @@ import CartBtn from "@/components/website/ui/CartBtn";
 function getBadgeStyle(badge) {
   if (!badge) return "";
 
-  if (badge.startsWith("−") || badge.startsWith("-")) {
+  if (badge.startsWith("−") || badge.startsWith("-") || badge.includes("%")) {
     return "bg-amber-700 text-white";
   }
 
@@ -37,8 +37,9 @@ export default function ProductCard({
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <div className="group overflow-hidden rounded-2xl border border-stone-200 bg-white transition-all duration-300 hover:border-amber-300 hover:shadow-md">
+    <div className="group flex flex-col justify-between overflow-hidden rounded-xl sm:rounded-2xl border border-stone-200 bg-white transition-all duration-300 hover:border-amber-300 hover:shadow-md">
       <Link href={href} className="block">
+        {/* Product Image Box */}
         <div className="relative aspect-square overflow-hidden bg-stone-100">
           {!imgError ? (
             <>
@@ -48,7 +49,7 @@ export default function ProductCard({
 
               <img
                 src={image}
-                alt={name}
+                alt={name || "Product image"}
                 onLoad={() => setLoaded(true)}
                 onError={() => setImgError(true)}
                 className={`h-full w-full object-cover transition-all duration-500 group-hover:scale-105 ${
@@ -57,16 +58,16 @@ export default function ProductCard({
               />
             </>
           ) : (
-            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-stone-100 text-stone-400">
-              <ImageOff className="h-8 w-8" strokeWidth={1.5} />
-
-              <span className="px-4 text-center text-xs">{name}</span>
+            <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 bg-stone-100 p-2 text-stone-400">
+              <ImageOff className="h-6 w-6 sm:h-8 sm:w-8" strokeWidth={1.5} />
+              <span className="text-center text-[10px] sm:text-xs line-clamp-1">{name}</span>
             </div>
           )}
 
+          {/* Badge */}
           {badge && (
             <span
-              className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${getBadgeStyle(
+              className={`absolute left-2 top-2 sm:left-3 sm:top-3 rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider shadow-xs ${getBadgeStyle(
                 badge
               )}`}
             >
@@ -74,27 +75,32 @@ export default function ProductCard({
             </span>
           )}
 
-          <div className="absolute inset-x-3 bottom-3 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-            <span className="block rounded-full bg-white/95 py-2 text-center text-xs font-medium text-stone-900 shadow-sm">
-              View Product
+          {/* Hover overlay on desktop */}
+          <div className="absolute inset-x-3 bottom-3 hidden translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:block">
+            <span className="block rounded-full bg-white/95 py-2 text-center text-xs font-medium text-stone-900 shadow-sm backdrop-blur-xs">
+              View Details
             </span>
           </div>
         </div>
 
-        <div className="border-t border-stone-100 p-3.5 pb-2">
-          <p className="text-xs uppercase tracking-wide text-stone-500">
-            {category}
-          </p>
+        {/* Product Info */}
+        <div className="p-2.5 sm:p-3.5 pb-2">
+          {category && (
+            <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-800 truncate">
+              {category}
+            </p>
+          )}
 
-          <h3 className="mt-1 line-clamp-1 text-sm font-medium text-stone-900">
+          <h3 className="mt-1 text-xs sm:text-sm font-medium text-stone-900 line-clamp-1 sm:line-clamp-2 leading-snug">
             {name}
           </h3>
 
-          <div className="mt-1.5 flex items-center gap-1">
+          {/* Rating Stars */}
+          <div className="mt-1.5 flex items-center gap-0.5 sm:gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
-                className={`h-3.5 w-3.5 ${
+                className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${
                   i < rating
                     ? "fill-amber-500 text-amber-500"
                     : "fill-stone-200 text-stone-200"
@@ -103,27 +109,29 @@ export default function ProductCard({
             ))}
 
             {reviewCount && (
-              <span className="ml-1 text-xs text-stone-400">
+              <span className="ml-1 text-[10px] sm:text-xs text-stone-400">
                 ({reviewCount})
               </span>
             )}
           </div>
 
-          <div className="mt-1.5 flex items-center gap-2">
-            <span className="text-sm font-semibold text-stone-900">
-              {price}
+          {/* Price */}
+          <div className="mt-2 flex flex-wrap items-baseline gap-1.5 sm:gap-2">
+            <span className="text-xs sm:text-sm font-bold text-stone-900">
+              {typeof price === "number" ? `₹${price.toLocaleString()}` : price}
             </span>
 
             {originalPrice && (
-              <span className="text-xs text-stone-400 line-through">
-                {originalPrice}
+              <span className="text-[10px] sm:text-xs text-stone-400 line-through">
+                {typeof originalPrice === "number" ? `₹${originalPrice.toLocaleString()}` : originalPrice}
               </span>
             )}
           </div>
         </div>
       </Link>
 
-      <div className="px-3.5 pb-3.5">
+      {/* Cart Button */}
+      <div className="p-2.5 pt-0 sm:p-3.5 sm:pt-0">
         <CartBtn product={product} onAddToCart={onAddToCart} />
       </div>
     </div>

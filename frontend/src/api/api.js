@@ -1,7 +1,5 @@
 import { client } from "@/utils/helper";  
-import axios from "axios";
 
-import { cookies } from "next/headers";
 
 
 
@@ -160,26 +158,24 @@ export const fetchRoomById = async (id) => {
   }
 };   
 
-export const  getme=async ()=>{
+export const getme = async () => {
   try {
-      const cookie = await cookies();  
-      const token = cookie.get("token")?.value;
-  const response =     await client.get("user/get-me",{
-        headers:{
-          Authorization:token
-        }
-      });
-      
-      return response.data
+    const { cookies } = await import("next/headers");
+    const cookie = await cookies();
+    const token = cookie.get("token")?.value;
+    const response = await client.get("user/get-me", {
+      headers: {
+        Authorization: token,
+      },
+    });
 
-
-     
+    return response.data;
   } catch (error) {
-        return{
-          message:"not found",
-          success:false,
-          user:null
-        }
+    return {
+      message: "not found",
+      success: false,
+      user: null,
+    };
   }
-}
+};
 

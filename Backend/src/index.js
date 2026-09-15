@@ -9,7 +9,7 @@ import productRoter from "./routers/product.router.js";
 import userRouter from "./routers/user.router.js";
 import cartRouter from "./routers/cart.router.js";
 import orderRouter from "./routers/order.router.js";
-
+import contactRouter from "./routers/contact.routes.js";
 
 dotenv.config();
 
@@ -47,6 +47,7 @@ app.use("/api/product", productRoter);
 app.use("/api/user",userRouter);
 app.use("/api/cart",cartRouter);
 app.use("/api/order",orderRouter);
+app.use("/api/contact", contactRouter);
 
 
 // Keep unknown routes as JSON instead of Express's default HTML error response.

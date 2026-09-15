@@ -1,13 +1,11 @@
 "use client";
 
-import {
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { X, RotateCcw, SlidersHorizontal, Check } from "lucide-react";
 import AvailabilityFilter from "./AvailabilityFilter";
 import PriceFilter from "./PriceFilter";
+import { useStoreFilters } from "./StoreFilterContext";
 
 const colors = [
   { name: "Walnut Brown", hex: "#7a5230" },
@@ -25,20 +23,19 @@ function FilterCheckbox({
   onChange = () => {},
 }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between py-1.5 text-sm">
-      <span className="flex items-center gap-2.5 text-stone-700">
+    <label className="flex cursor-pointer items-center justify-between py-2 text-sm select-none group">
+      <span className="flex items-center gap-3 text-stone-700 transition group-hover:text-stone-900">
         <input
           type="checkbox"
           checked={checked}
           onChange={onChange}
-          className="h-4 w-4 rounded border-stone-300 text-amber-700 focus:ring-amber-600"
+          className="h-4 w-4 rounded border-stone-300 text-amber-700 focus:ring-amber-600 cursor-pointer accent-amber-700"
         />
-
-        {label}
+        <span className={checked ? "font-medium text-amber-900" : ""}>{label}</span>
       </span>
 
       {typeof count === "number" && (
-        <span className="text-xs text-stone-400">{count}</span>
+        <span className="text-xs text-stone-400 font-mono">{count}</span>
       )}
     </label>
   );
@@ -52,7 +49,13 @@ export default function StoreFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [priceRange, setPriceRange] = useState(150000);
+  const {
+    isMobileFilterOpen,
+    closeMobileFilters,
+    activeFiltersCount,
+    clearAllFilters,
+  } = useStoreFilters();
+
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedRatings, setSelectedRatings] = useState([]);
 
@@ -124,21 +127,24 @@ export default function StoreFilters({
     );
   };
 
-  return (
-    <aside className="w-full shrink-0 lg:w-64">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-stone-900">
-        Filters
-      </h2>
-
+  const filterContent = (
+    <>
       {/* Room Type */}
-      <div className="mt-5 border-t border-stone-200 pt-5">
-        <h3 className="text-sm font-medium text-stone-900">
-          Room Type
-        </h3>
+      <div className="border-t border-stone-200 pt-5">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-900">
+            Room Type
+          </h3>
+          {selectedRooms.length > 0 && (
+            <span className="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+              {selectedRooms.length}
+            </span>
+          )}
+        </div>
 
-        <div className="mt-2">
+        <div className="space-y-0.5 mt-2">
           {roomTypes.map((room) => {
-            const active = selectedRooms.includes(room.slug);
+            const active = selectedRooms.includes(room.slug?.toLowerCase());
 
             return (
               <FilterCheckbox
@@ -155,17 +161,24 @@ export default function StoreFilters({
       </div>
 
       {/* Price Range */}
-     <PriceFilter/>
+      <PriceFilter />
 
       {/* Categories */}
-      <div className="mt-5 border-t border-stone-200 pt-5">
-        <h3 className="text-sm font-medium text-stone-900">
-          Categories
-        </h3>
+      <div className="border-t border-stone-200 pt-5">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-900">
+            Categories
+          </h3>
+          {selectedCategories.length > 0 && (
+            <span className="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+              {selectedCategories.length}
+            </span>
+          )}
+        </div>
 
-        <div className="mt-2">
+        <div className="space-y-0.5 mt-2 max-h-60 overflow-y-auto pr-1">
           {categories.map((item) => {
-            const active = selectedCategories.includes(item.slug);
+            const active = selectedCategories.includes(item.slug?.toLowerCase());
 
             return (
               <FilterCheckbox
@@ -182,12 +195,12 @@ export default function StoreFilters({
       </div>
 
       {/* Color */}
-      <div className="mt-5 border-t border-stone-200 pt-5">
-        <h3 className="text-sm font-medium text-stone-900">
+      <div className="border-t border-stone-200 pt-5">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-900 mb-3">
           Color
         </h3>
 
-        <div className="mt-3 flex flex-wrap gap-2.5">
+        <div className="flex flex-wrap gap-2.5">
           {colors.map((color) => {
             const active = selectedColors.includes(color.name);
 
@@ -200,15 +213,26 @@ export default function StoreFilters({
                 onClick={() =>
                   toggle(setSelectedColors, color.name)
                 }
-                className={`h-7 w-7 rounded-full ring-offset-2 transition-transform hover:scale-110 ${
+                className={`group relative flex h-8 w-8 items-center justify-center rounded-full ring-offset-2 transition-all hover:scale-105 ${
                   active
-                    ? "ring-2 ring-amber-700"
-                    : "ring-1 ring-stone-300"
+                    ? "ring-2 ring-amber-700 shadow-sm"
+                    : "ring-1 ring-stone-300 hover:ring-stone-400"
                 }`}
                 style={{
                   backgroundColor: color.hex,
                 }}
-              />
+              >
+                {active && (
+                  <Check
+                    className={`h-4 w-4 ${
+                      color.hex === "#f2ede4"
+                        ? "text-stone-900"
+                        : "text-white"
+                    }`}
+                    strokeWidth={2.5}
+                  />
+                )}
+              </button>
             );
           })}
         </div>
@@ -218,14 +242,14 @@ export default function StoreFilters({
       <AvailabilityFilter />
 
       {/* Rating */}
-      <div className="mt-5 border-t border-stone-200 pt-5 pb-2">
-        <h3 className="text-sm font-medium text-stone-900">
+      <div className="border-t border-stone-200 pt-5 pb-2">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-900 mb-2">
           Rating
         </h3>
 
-        <div className="mt-2">
+        <div className="space-y-0.5 mt-2">
           <FilterCheckbox
-            label="★★★★★ & up"
+            label="★★★★★ (5 Stars)"
             checked={selectedRatings.includes("5")}
             onChange={() =>
               toggle(setSelectedRatings, "5")
@@ -241,6 +265,109 @@ export default function StoreFilters({
           />
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* 1. Desktop Sidebar (Visible only on lg and up) */}
+      <aside className="hidden lg:block w-64 shrink-0">
+        <div className="sticky top-24 space-y-5 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between pb-2 border-b border-stone-100">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4 text-stone-700" />
+              <h2 className="text-sm font-bold uppercase tracking-wider text-stone-900">
+                Filters
+              </h2>
+            </div>
+            {activeFiltersCount > 0 && (
+              <button
+                type="button"
+                onClick={clearAllFilters}
+                className="text-xs font-medium text-amber-700 hover:text-amber-800 transition flex items-center gap-1"
+              >
+                <RotateCcw className="h-3 w-3" />
+                Reset
+              </button>
+            )}
+          </div>
+
+          <div className="space-y-4 max-h-[calc(100vh-170px)] overflow-y-auto pr-1">
+            {filterContent}
+          </div>
+        </div>
+      </aside>
+
+      {/* 2. Mobile Drawer (Slide-over Modal on mobile/tablet) */}
+      <div
+        className={`fixed inset-0 z-50 lg:hidden transition-all duration-300 ${
+          isMobileFilterOpen
+            ? "opacity-100 pointer-events-auto visible"
+            : "opacity-0 pointer-events-none invisible"
+        }`}
+      >
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+          onClick={closeMobileFilters}
+        />
+
+        {/* Slide-over panel */}
+        <div
+          className={`fixed inset-y-0 left-0 flex w-[88%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
+            isMobileFilterOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          {/* Drawer Header */}
+          <div className="flex items-center justify-between border-b border-stone-200 px-5 py-4 bg-stone-50">
+            <div className="flex items-center gap-2.5">
+              <SlidersHorizontal className="h-5 w-5 text-amber-800" />
+              <h2 className="text-base font-bold uppercase tracking-wide text-stone-900">
+                Filters
+              </h2>
+              {activeFiltersCount > 0 && (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-700 px-1.5 text-xs font-semibold text-white">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={closeMobileFilters}
+              aria-label="Close filters"
+              className="rounded-full p-2 text-stone-500 hover:bg-stone-200 hover:text-stone-900 transition"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Drawer Body (Scrollable) */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-5">
+            {filterContent}
+          </div>
+
+          {/* Drawer Footer Actions */}
+          <div className="border-t border-stone-200 bg-stone-50 p-4 flex gap-3">
+            {activeFiltersCount > 0 && (
+              <button
+                type="button"
+                onClick={clearAllFilters}
+                className="w-1/3 rounded-xl border border-stone-300 bg-white py-3 text-xs font-semibold text-stone-700 transition hover:bg-stone-100"
+              >
+                Clear All
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={closeMobileFilters}
+              className="flex-1 rounded-xl bg-amber-700 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition hover:bg-amber-800 active:scale-[0.98]"
+            >
+              Show Results
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

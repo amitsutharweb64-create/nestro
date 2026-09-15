@@ -1,92 +1,135 @@
 "use client";
 
-import React, { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 export default function PriceFilter() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
 
-  const [minPrice, setMinPrice] = useState(
-    Number(searchParams.get("min_price")) || 0
-  );
+  const minParam = searchParams.get("min_price") || "";
+  const maxParam = searchParams.get("max_price") || "";
 
-  const [maxPrice, setMaxPrice] = useState(
-    Number(searchParams.get("max_price")) || 10000
-  );
+  const [minPrice, setMinPrice] = useState(minParam);
+  const [maxPrice, setMaxPrice] = useState(maxParam);
 
-  function handlePriceFilter() {
+  useEffect(() => {
+    setMinPrice(minParam);
+    setMaxPrice(maxParam);
+  }, [minParam, maxParam]);
+
+  function handlePriceFilter(e) {
+    e?.preventDefault();
     const params = new URLSearchParams(searchParams.toString());
 
-    params.set("min_price", minPrice.toString());
-    params.set("max_price", maxPrice.toString());
+    if (minPrice !== "" && Number(minPrice) >= 0) {
+      params.set("min_price", minPrice.toString());
+    } else {
+      params.delete("min_price");
+    }
 
-    router.push(`/store?${params.toString()}`, {
+    if (maxPrice !== "" && Number(maxPrice) > 0) {
+      params.set("max_price", maxPrice.toString());
+    } else {
+      params.delete("max_price");
+    }
+
+    params.delete("page");
+
+    const queryString = params.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, {
       scroll: false,
     });
-  }   
+  }
+
   function clearPriceFilter() {
-  const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams.toString());
 
-  params.delete("min_price");
-  params.delete("max_price");
+    params.delete("min_price");
+    params.delete("max_price");
+    params.delete("page");
 
-  setMinPrice(0);
-  setMaxPrice(0);
+    setMinPrice("");
+    setMaxPrice("");
 
-  router.push(`/store?${params.toString()}`, {
-    scroll: false,
-  });
-}
+    const queryString = params.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+      scroll: false,
+    });
+  }
+
+  const hasPriceFilter = Boolean(minParam || maxParam);
 
   return (
-    <div className="mt-5 border-t border-stone-200 pt-5">
-      <h3 className="mb-5 text-base font-semibold text-stone-900">
-        Price Range
-      </h3>
+    <div className="border-t border-stone-200 pt-5">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-900">
+          Price Range
+        </h3>
+        {hasPriceFilter && (
+          <button
+            type="button"
+            onClick={clearPriceFilter}
+            className="text-xs text-amber-700 hover:underline"
+          >
+            Reset
+          </button>
+        )}
+      </div>
 
-      <div className="flex items-center gap-3">
-        <input
-          type="number"
-          value={minPrice}
-          onChange={(event) =>
-            setMinPrice(Number(event.target.value))
-          }
-          placeholder="Min ₹"
-          className="h-11 w-full rounded-lg border border-stone-300 px-3 text-sm outline-none transition focus:border-amber-700"
-        />
+      <form onSubmit={handlePriceFilter} className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-xs text-stone-400">
+              ₹
+            </span>
+            <input
+              type="number"
+              min="0"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              placeholder="Min"
+              className="h-10 w-full rounded-xl border border-stone-300 bg-stone-50/50 pl-6 pr-2 text-xs sm:text-sm text-stone-800 outline-none transition focus:border-amber-700 focus:bg-white focus:ring-1 focus:ring-amber-700"
+            />
+          </div>
 
-        <span className="text-stone-400">–</span>
+          <span className="text-stone-400 font-medium">–</span>
 
-        <input
-          type="number"
-          value={maxPrice}
-          onChange={(event) =>
-            setMaxPrice(Number(event.target.value))
-          }
-          placeholder="Max ₹"
-          className="h-11 w-full rounded-lg border border-stone-300 px-3 text-sm outline-none transition focus:border-amber-700"
-        />
-      </div>   
+          <div className="relative flex-1">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 text-xs text-stone-400">
+              ₹
+            </span>
+            <input
+              type="number"
+              min="0"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              placeholder="Max"
+              className="h-10 w-full rounded-xl border border-stone-300 bg-stone-50/50 pl-6 pr-2 text-xs sm:text-sm text-stone-800 outline-none transition focus:border-amber-700 focus:bg-white focus:ring-1 focus:ring-amber-700"
+            />
+          </div>
+        </div>
 
-   <div className="mt-4 flex gap-3">
-  <button
-    type="button"
-    onClick={handlePriceFilter}
-    className="w-full rounded-lg bg-amber-700 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-800"
-  >
-    Apply Price
-  </button>
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            className="flex-1 rounded-xl bg-amber-700 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-amber-800 active:scale-[0.98]"
+          >
+            Apply Price
+          </button>
 
-  <button
-    type="button"
-    onClick={clearPriceFilter}
-    className="w-full rounded-lg border border-stone-300 py-2.5 text-sm font-semibold text-stone-700 transition hover:bg-stone-100"
-  >
-    Clear Filters
-  </button>
-</div>   
-
+          {hasPriceFilter && (
+            <button
+              type="button"
+              onClick={clearPriceFilter}
+              className="rounded-xl border border-stone-300 bg-white px-3 py-2 text-xs font-medium text-stone-600 transition hover:bg-stone-100"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      </form>
     </div>
   );
 }
