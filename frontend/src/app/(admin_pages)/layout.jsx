@@ -24,8 +24,9 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body >  
+      <body suppressHydrationWarning>  
         <main className="w-full flex h-screen bg-grey"> 
           <Toaster position="top-center " richColors   />
          <Sidebar/> 

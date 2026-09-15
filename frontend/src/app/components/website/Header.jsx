@@ -3,7 +3,19 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Search, ShoppingBag, User } from "lucide-react";
+
+import {
+  Menu,
+  X,
+  Search,
+  ShoppingBag,
+  User,
+} from "lucide-react";
+
+import { useSelector, useDispatch } from "react-redux";
+import { lsToCart } from "@/redux/features/cartSlice";
+
+import { client } from "@/utils/helper";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -11,17 +23,43 @@ const navLinks = [
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
   { label: "Checkout", href: "/checkout" },
-  { label: "Sign In", href: "/sign" },
 ];
 
-export default function Header() {
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+export default function Header({ profile = null }) {
+  const dispatcher = useDispatch();
 
-  // Close mobile menu on route change
+  const cart = useSelector((store) => store.cart);
+
+  const pathname = usePathname();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(profile);
+
+  // Get logged-in user
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const response = await client.get("/user/get-me");
+
+        console.log("User:", response.data.user);
+
+        setUser(response.data.user);
+      } catch (error) {
+        console.log("User not logged in:", error);
+
+        setUser(null);
+      }
+    };
+
+    getUser();
+  }, []);
+
+  // Close mobile menu + load cart
   useEffect(() => {
     setIsOpen(false);
-  }, [pathname]);
+
+    dispatcher(lsToCart());
+  }, [pathname, dispatcher]);
 
   return (
     <header
@@ -33,6 +71,7 @@ export default function Header() {
       }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:px-10">
+
         {/* Logo */}
         <Link
           href="/"
@@ -45,6 +84,7 @@ export default function Header() {
         <nav className="hidden items-center gap-1 md:flex">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
+
             return (
               <Link
                 key={link.href}
@@ -61,36 +101,67 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Right actions */}
+        {/* Right Actions */}
         <div className="hidden items-center gap-5 md:flex">
+
+          {/* Search */}
           <button
             aria-label="Search"
             className="text-stone-700 transition-colors hover:text-amber-700"
           >
-            <Search className="h-5 w-5" strokeWidth={1.75} />
+            <Search
+              className="h-5 w-5"
+              strokeWidth={1.75}
+            />
           </button>
 
+          {/* Cart */}
           <Link
-            href="/checkout"
+            href="/cart"
             aria-label="Cart"
             className="relative text-stone-700 transition-colors hover:text-amber-700"
           >
-            <ShoppingBag className="h-5 w-5" strokeWidth={1.75} />
+            <ShoppingBag
+              className="h-5 w-5"
+              strokeWidth={1.75}
+            />
+
             <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-amber-700 text-[10px] font-medium text-white">
-              3
+              {cart?.items?.length || 0}
             </span>
           </Link>
 
-          <Link
-            href="/sign-in"
-            aria-label="Account"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-800 transition-colors hover:bg-amber-100"
-          >
-            <User className="h-4 w-4" strokeWidth={1.75} />
-          </Link>
+          {/* User / Profile */}
+          {user ? (
+            <Link
+              href="/profile"
+              aria-label="Profile"
+              className="flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800 transition-colors hover:bg-amber-100"
+            >
+              <User
+                className="h-4 w-4"
+                strokeWidth={1.75}
+              />
+
+              <span className="max-w-[100px] truncate text-sm font-medium">
+                {user.name || "Profile"}
+              </span>
+            </Link>
+          ) : (
+            <Link
+              href="/sign-in"
+              aria-label="Sign In"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-800 transition-colors hover:bg-amber-100"
+            >
+              <User
+                className="h-4 w-4"
+                strokeWidth={1.75}
+              />
+            </Link>
+          )}
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile Menu Button */}
         <button
           onClick={() => setIsOpen((prev) => !prev)}
           aria-label="Toggle menu"
@@ -99,14 +170,20 @@ export default function Header() {
           className="text-stone-800 md:hidden"
         >
           {isOpen ? (
-            <X className="h-6 w-6" strokeWidth={1.5} />
+            <X
+              className="h-6 w-6"
+              strokeWidth={1.5}
+            />
           ) : (
-            <Menu className="h-6 w-6" strokeWidth={1.5} />
+            <Menu
+              className="h-6 w-6"
+              strokeWidth={1.5}
+            />
           )}
         </button>
       </div>
 
-      {/* Mobile menu panel */}
+      {/* Mobile Menu Panel */}
       <div
         id="mobile-menu"
         className={`absolute inset-x-0 top-full overflow-hidden transition-[max-height,opacity] duration-300 ease-out md:hidden ${
@@ -116,8 +193,10 @@ export default function Header() {
         }`}
       >
         <nav className="flex flex-col gap-1 bg-white px-5 py-4">
+
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
+
             return (
               <Link
                 key={link.href}
@@ -133,16 +212,65 @@ export default function Header() {
             );
           })}
 
-          <div className="mt-2 flex items-center gap-5 border-t border-stone-200 pt-4">
-            <button aria-label="Search" className="text-stone-700">
-              <Search className="h-5 w-5" strokeWidth={1.75} />
-            </button>
-            <Link href="/checkout" aria-label="Cart" className="relative text-stone-700">
-              <ShoppingBag className="h-5 w-5" strokeWidth={1.75} />
-              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-amber-700 text-[10px] font-medium text-white">
-                3
+          {/* Mobile User */}
+          {user ? (
+            <Link
+              href="/profile"
+              className="mt-2 flex items-center gap-3 border-t border-stone-200 px-4 pt-4 text-sm font-medium text-amber-800"
+            >
+              <User
+                className="h-5 w-5"
+                strokeWidth={1.75}
+              />
+
+              <span>
+                {user.name || "Profile"}
               </span>
             </Link>
+          ) : (
+            <Link
+              href="/sign-in"
+              className="mt-2 flex items-center gap-3 border-t border-stone-200 px-4 pt-4 text-sm font-medium text-stone-700"
+            >
+              <User
+                className="h-5 w-5"
+                strokeWidth={1.75}
+              />
+
+              <span>Sign In</span>
+            </Link>
+          )}
+
+          {/* Mobile Search + Cart */}
+          <div className="mt-2 flex items-center gap-5 border-t border-stone-200 pt-4">
+
+            {/* Search */}
+            <button
+              aria-label="Search"
+              className="text-stone-700"
+            >
+              <Search
+                className="h-5 w-5"
+                strokeWidth={1.75}
+              />
+            </button>
+
+            {/* Cart */}
+            <Link
+              href="/cart"
+              aria-label="Cart"
+              className="relative text-stone-700"
+            >
+              <ShoppingBag
+                className="h-5 w-5"
+                strokeWidth={1.75}
+              />
+
+              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-amber-700 text-[10px] font-medium text-white">
+                {cart?.items?.length || 0}
+              </span>
+            </Link>
+
           </div>
         </nav>
       </div>

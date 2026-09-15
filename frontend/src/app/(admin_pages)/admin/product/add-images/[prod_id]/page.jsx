@@ -55,7 +55,7 @@ export default function AddProduct({ params }) {
 
         }
         catch (error) {
-            toast.error(error.response.data.message || "Internal server error")
+            toast.error(error.response?.data?.message || "Internal server error")
         }
 
     };

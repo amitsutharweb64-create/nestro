@@ -9,10 +9,6 @@ import { fetchCategory } from "@/api/api";
 export default async function Page() {
   const { success, data ,message } = await fetchCategory();
 
-  if (success === false) {
-      throw new Error("Internal Server Error")
-  }
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -23,6 +19,11 @@ export default async function Page() {
       />
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        {success === false && (
+          <p className="px-6 py-4 text-sm text-red-600">
+            {message || "Unable to load categories."}
+          </p>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <TableHead
@@ -30,7 +31,7 @@ export default async function Page() {
             />
 
             <tbody>
-              {data.map((item) => (
+              {data?.map((item) => (
                 <tr
                   key={item._id}
                   className="border-b border-gray-100 hover:bg-gray-50 transition"
@@ -71,6 +72,13 @@ export default async function Page() {
                   </td>
                 </tr>
               ))}
+              {data?.length === 0 && success !== false && (
+                <tr>
+                  <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
+                    No categories found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

@@ -13,6 +13,20 @@ const storage = new CloudinaryStorage({
   },
 });
  
-const upload = multer({ storage });
+const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: (req, file, callback) => {
+    if (!allowedImageTypes.has(file.mimetype)) {
+      return callback(new Error("Only JPG, PNG, and WEBP images are allowed"));
+    }
+
+    callback(null, true);
+  },
+});
 
 export default upload;

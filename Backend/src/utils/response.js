@@ -7,10 +7,11 @@ const sendSuccess = (res, message = "Success") => {
 };
 
 // created response
-const sendCreated = (res, message = "Created successfully") => {
+const sendCreated = (res, message = "Created successfully", data = {}) => {
   return res.status(201).json({
     success: true,
-    message
+    message,
+    ...data,
   });
 };
 

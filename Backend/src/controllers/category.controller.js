@@ -8,8 +8,6 @@ export const read = async(req,res)=>{
             const filter = {};
             const limit  = query.limit ? parseInt(query.limit) : 4 ;
            
-
-
            if(query.status){
                    filter.status = query.status === "true" //qwery ko boolian me convert ker dega 
             }   
@@ -75,7 +73,8 @@ export const create =async (req,res)=>{
 
 
 export const  updateStatus =async (req,res)=>{
-    try {
+    try {     
+          console.log(req.user,"user information")
          const {id} = req.params;
               const category = await CategoryModel.findById(id);  
              if(!category) return sendNotFound(res); 

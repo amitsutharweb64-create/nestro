@@ -56,7 +56,7 @@ export default function ActionDropdown({
               router.refresh()
           }
                 } catch (error) {
-                    toast.error(error.response.data.message || "internal server error")
+                    toast.error(error.response?.data?.message || "Internal server error")
                 }
             },
         },
@@ -72,7 +72,7 @@ export default function ActionDropdown({
               router.refresh()
           }
                 } catch (error) {
-                    toast.error(error.response.data.message || "internal server error")
+                    toast.error(error.response?.data?.message || "Internal server error")
                 }
             },
         },

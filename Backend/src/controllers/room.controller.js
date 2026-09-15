@@ -74,7 +74,7 @@ export const create = async (req, res) => {
       name,
       slug,
       image: imageUrl,
-    });
+    });  
 
     return res.status(201).json({
       message: "Room created successfully",
@@ -147,4 +147,5 @@ export const deleteById = async (req, res) => {
   } catch (error) {
     return sendServerError(res);
   }
-};
+};  
+

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Star, ImageOff, ShoppingCart } from "lucide-react";
+import { Star, ImageOff } from "lucide-react";
+import CartBtn from "@/components/website/ui/CartBtn";
 
 function getBadgeStyle(badge) {
   if (!badge) return "";
@@ -34,19 +35,6 @@ export default function ProductCard({
 }) {
   const [imgError, setImgError] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
-
-  const handleAddToCart = () => {
-    setIsAdding(true);
-
-    if (onAddToCart) {
-      onAddToCart(product);
-    }
-
-    setTimeout(() => {
-      setIsAdding(false);
-    }, 800);
-  };
 
   return (
     <div className="group overflow-hidden rounded-2xl border border-stone-200 bg-white transition-all duration-300 hover:border-amber-300 hover:shadow-md">
@@ -136,16 +124,7 @@ export default function ProductCard({
       </Link>
 
       <div className="px-3.5 pb-3.5">
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={isAdding}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-stone-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          <ShoppingCart className="h-4 w-4" />
-
-          {isAdding ? "Added to Cart" : "Add to Cart"}
-        </button>
+        <CartBtn product={product} onAddToCart={onAddToCart} />
       </div>
     </div>
   );

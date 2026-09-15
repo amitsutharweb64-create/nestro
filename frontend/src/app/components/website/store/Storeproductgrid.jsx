@@ -6,6 +6,7 @@ export default function StoreProductGrid({ products }) {
       {products?.map((product) => (
         <ProductCard
           key={product._id}
+          product={product}
           href={`/product/${product.slug}`}
           image={product.thumbnail}
           category={product.category?.name}
