@@ -28,6 +28,11 @@ const contactSchema = new mongoose.Schema(
       required: [true, "Message is required"],
       trim: true,
     },
+    status: {
+      type: String,
+      enum: ["pending", "in_progress", "resolved", "closed"],
+      default: "pending",
+    },
   },
   {
     timestamps: true,

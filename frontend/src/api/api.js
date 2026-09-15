@@ -179,3 +179,53 @@ export const getme = async () => {
   }
 };
 
+export const fetchInquiries = async ({ page = 1, limit = 10, search = "", subject = "", status = "" } = {}) => {
+  try {
+    const params = new URLSearchParams();
+    if (page) params.append("page", page);
+    if (limit) params.append("limit", limit);
+    if (search) params.append("search", search);
+    if (subject && subject !== "all") params.append("subject", subject);
+    if (status && status !== "all") params.append("status", status);
+
+    const response = await client.get(`/contact?${params.toString()}`);
+    if (response.data.success) {
+      return response.data;
+    }
+
+    return {
+      data: [],
+      success: false,
+      message: response.data.message || "Failed to fetch inquiries",
+    };
+  } catch (error) {
+    return {
+      data: [],
+      success: false,
+      message: error.response?.data?.message || "Failed to connect to contact inquiries API",
+    };
+  }
+};
+
+export const fetchInquiryById = async (id) => {
+  try {
+    const response = await client.get(`/contact/${id}`);
+    if (response.data.success) {
+      return response.data;
+    }
+
+    return {
+      data: null,
+      success: false,
+      message: response.data.message || "Failed to fetch inquiry details",
+    };
+  } catch (error) {
+    return {
+      data: null,
+      success: false,
+      message: error.response?.data?.message || "Failed to connect to inquiry API",
+    };
+  }
+};
+
+
