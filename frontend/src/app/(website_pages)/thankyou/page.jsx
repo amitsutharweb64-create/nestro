@@ -1,12 +1,24 @@
 "use client";
 
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { emptyCart } from "@/redux/features/cartSlice";
 
-export default function ThankYouPage({ params }) {
+export default function ThankYouPage() {
   const searchParams = useSearchParams();
-
+  const dispatcher = useDispatch();
   const orderId = searchParams.get("orderId");
+
+  useEffect(() => {
+    dispatcher(emptyCart());
+    try {
+      localStorage.removeItem("cart");
+    } catch (e) {
+      console.error("Cart clear error:", e);
+    }
+  }, [dispatcher]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">

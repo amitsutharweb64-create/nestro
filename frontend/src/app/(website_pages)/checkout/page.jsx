@@ -10,11 +10,13 @@ import { client } from "@/utils/helper";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useRazorpay } from "react-razorpay";
+import { useDispatch } from "react-redux";
+import { emptyCart } from "@/redux/features/cartSlice";
 
 export default function CheckoutPage() {
   const { Razorpay } = useRazorpay();
-
   const router = useRouter();
+  const dispatcher = useDispatch();
 
   const [paymentMode, setPaymentMode] = useState("cod");
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -54,6 +56,10 @@ export default function CheckoutPage() {
       // COD
       if (paymentMode === "cod") {
         if (response.data.success) {
+          // Clear cart from Redux and localStorage
+          dispatcher(emptyCart());
+          localStorage.removeItem("cart");
+
           router.push(`/thankyou?orderId=${response.data.orderId}`);
         } else {
           toast.error(
@@ -84,6 +90,10 @@ export default function CheckoutPage() {
               if (!verification.data.success) {
                 throw new Error(verification.data.message || "Payment verification failed");
               }
+
+              // Clear cart from Redux and localStorage
+              dispatcher(emptyCart());
+              localStorage.removeItem("cart");
 
               toast.success("Payment successful!");
               router.push(`/thankyou?orderId=${response.data.orderId}`);

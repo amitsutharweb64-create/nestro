@@ -213,6 +213,9 @@ export const Orderplace = async (req, res) => {
 
     // COD
     if (paymentMethod === "cod") {
+      // Clear user's cart in database
+      await CartModel.findOneAndUpdate({ userId }, { items: [] });
+
       return sendCreated(res, "Order placed successfully", {
         order,
         orderId: order._id,
@@ -283,6 +286,9 @@ export const verifyRazorpayPayment = async (req, res) => {
     order.razorpay_payment_id = razorpay_payment_id;
     order.paidAt = new Date();
     await order.save();
+
+    // Clear user's cart in database
+    await CartModel.findOneAndUpdate({ userId }, { items: [] });
 
     return res.status(200).json({
       success: true,

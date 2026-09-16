@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { useSelector, useDispatch } from "react-redux";
-import { lsToCart } from "@/redux/features/cartSlice";
+import { lsToCart, emptyCart } from "@/redux/features/cartSlice";
 
 import { client } from "@/utils/helper";
 
@@ -35,31 +35,32 @@ export default function Header({ profile = null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(profile);
 
-  // Get logged-in user
+  // Get logged-in user and synchronize cart
   useEffect(() => {
     const getUser = async () => {
       try {
         const response = await client.get("/user/get-me");
 
-        console.log("User:", response.data.user);
-
-        setUser(response.data.user);
+        if (response.data?.success && response.data?.user) {
+          setUser(response.data.user);
+          dispatcher(lsToCart());
+        } else {
+          setUser(null);
+          dispatcher(emptyCart());
+        }
       } catch (error) {
-        console.log("User not logged in:", error);
-
         setUser(null);
+        dispatcher(emptyCart());
       }
     };
 
     getUser();
-  }, []);
+  }, [pathname, dispatcher]);
 
-  // Close mobile menu + load cart
+  // Close mobile menu
   useEffect(() => {
     setIsOpen(false);
-
-    dispatcher(lsToCart());
-  }, [pathname, dispatcher]);
+  }, [pathname]);
 
   return (
     <header
@@ -149,7 +150,7 @@ export default function Header({ profile = null }) {
             </Link>
           ) : (
             <Link
-              href="/sign-in"
+              href="/sign_in"
               aria-label="Sign In"
               className="flex h-9 w-9 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-800 transition-colors hover:bg-amber-100"
             >
@@ -229,7 +230,7 @@ export default function Header({ profile = null }) {
             </Link>
           ) : (
             <Link
-              href="/sign-in"
+              href="/sign_in"
               className="mt-2 flex items-center gap-3 border-t border-stone-200 px-4 pt-4 text-sm font-medium text-stone-700"
             >
               <User

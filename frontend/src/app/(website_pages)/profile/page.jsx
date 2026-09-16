@@ -7,7 +7,7 @@ export default async function ProfilePage() {
   const response = await getme();
 
   if (!response.success || !response.user) {
-    redirect("/sign-in");
+    redirect("/sign_in");
   }
 
   const { user } = response;
