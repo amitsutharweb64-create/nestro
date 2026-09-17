@@ -5,12 +5,13 @@ import PageHeader from "@/components/admin/PageHeader";
 import StatusBadge from "@/components/admin/StatusBadge";
 import TableHead from "@/components/admin/TableHead";
 
-export default async function ProductPage() {
-  const { success, data, message } = await fetchProducts();
+// Product data comes from the external backend API. Fetch it at request time,
+// not while Next.js is generating the deployment build.
+export const dynamic = "force-dynamic";
 
-  if (!success) {
-    throw new Error(message || "Unable to load products");
-  }
+export default async function ProductPage() {
+  const { success, data = [] } = await fetchProducts();
+  const products = success ? data : [];
 
   return (
     <div className="space-y-6">
@@ -37,7 +38,7 @@ export default async function ProductPage() {
             />
 
             <tbody>
-              {data.map((item) => (
+              {products.map((item) => (
                 <tr
                   key={item._id}
                   className="border-b border-gray-100 transition hover:bg-gray-50"
@@ -105,7 +106,7 @@ export default async function ProductPage() {
                 </tr>
               ))}
 
-              {data.length === 0 && (
+              {products.length === 0 && (
                 <tr>
                   <td
                     colSpan={6}
