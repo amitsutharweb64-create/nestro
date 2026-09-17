@@ -6,12 +6,13 @@ import DeleteButton from "@/components/admin/DeleteButton";
 import EditButton from "@/components/admin/EditButton";
 import { fetchCategory, fetchRooms } from "@/api/api";
 
-export default async function Page() {
-  const { success, data ,message } = await fetchRooms();
+// Room data is provided by the external backend API, so fetch it at request
+// time rather than when Next.js generates the deployment build.
+export const dynamic = "force-dynamic";
 
-  if (success === false) {
-      throw new Error("Internal Server Error")
-  }
+export default async function Page() {
+  const { success, data = [] } = await fetchRooms();
+  const rooms = success ? data : [];
 
   return (
     <div className="space-y-6">
@@ -30,7 +31,7 @@ export default async function Page() {
             />
 
             <tbody>
-              {data.map((item) => (
+              {rooms.map((item) => (
                 <tr
                   key={item._id}
                   className="border-b border-gray-100 hover:bg-gray-50 transition"
