@@ -3,6 +3,8 @@ import StoreProductGrid from "@/components/website/store/Storeproductgrid";
 import StorePagination from "@/components/website/store/Storepageination";
 import StoreOfferBanner from "@/components/website/store/Storeofferbanner";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page({ searchParams }) {
   const query = await searchParams;
 

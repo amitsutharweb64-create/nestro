@@ -3,6 +3,7 @@ import StoreHero from "@/components/website/store/StoreHero";
 import StoreToolbar from "@/components/website/store/StoreToolbar";
 import { StoreFilterProvider } from "@/components/website/store/StoreFilterContext";
 import { fetchCategory, fetchRooms } from "@/api/api";
+import { Suspense } from "react";
 
 export default async function Layout({ children }) {
   const [categoryResponse, roomResponse] = await Promise.all([
@@ -18,7 +19,8 @@ export default async function Layout({ children }) {
     : [];
 
   return (
-    <StoreFilterProvider categories={categories} roomTypes={roomTypes}>
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <StoreFilterProvider categories={categories} roomTypes={roomTypes}>
       <StoreHero />
       <section
         id="store-products"
@@ -38,6 +40,7 @@ export default async function Layout({ children }) {
           </div>
         </div>
       </section>
-    </StoreFilterProvider>
+      </StoreFilterProvider>
+    </Suspense>
   );
 }
