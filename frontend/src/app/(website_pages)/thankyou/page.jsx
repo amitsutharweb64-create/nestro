@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { emptyCart } from "@/redux/features/cartSlice";
 
-export default function ThankYouPage() {
+function ThankYouContent() {
   const searchParams = useSearchParams();
   const dispatcher = useDispatch();
   const orderId = searchParams.get("orderId");
@@ -62,5 +62,13 @@ export default function ThankYouPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function ThankYouPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <ThankYouContent />
+    </Suspense>
   );
 }
