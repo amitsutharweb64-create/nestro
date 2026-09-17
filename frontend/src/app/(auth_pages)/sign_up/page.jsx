@@ -32,7 +32,8 @@ export default function SignupPage() {
       setLoading(true);
       setMessage("");
       
-    const response = await client.post("user/register", payload);
+    const response = await client.post("/user/register", payload);
+
 
     if(response.data.success){
     router.push(`/verify_otp?email=${response.data.email}`)

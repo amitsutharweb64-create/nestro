@@ -1,90 +1,92 @@
 import { redirect } from "next/navigation";
 import { getme } from "@/api/api";
-import Link from "next/link";
-import { Package, MapPin, LogOut, Pencil } from "lucide-react";
+import { Calendar } from "lucide-react";
+import LogoutButton from "@/components/website/profile/LogoutButton.jsx";
+import ProfileContact from "@/components/website/profile/ProfileContact.jsx";
+import ProfileOrders from "@/components/website/profile/ProfileOrders.jsx";
+import ProfileAddresses from "@/components/website/profile/ProfileAddresses.jsx";
+
+function formatMemberSince(dateString) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "";
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  return `${months[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
 
 export default async function ProfilePage() {
   const response = await getme();
 
-  if (!response.success || !response.user) {
+  if (!response?.success || !response?.user) {
     redirect("/sign_in");
   }
 
   const { user } = response;
 
   const initial = user.name?.charAt(0)?.toUpperCase() || "U";
+  const memberSince = formatMemberSince(user.createdAt);
 
   return (
-    <main className="mx-auto min-h-[calc(100vh-160px)] max-w-3xl px-6 py-12 lg:px-10">
-      <section className="rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-amber-700">
-              My account
-            </p>
-            <h1 className="mt-3 text-3xl font-semibold text-stone-900">
-              {user.name}
-            </h1>
-            {user.createdAt && (
-              <p className="mt-1 text-sm text-stone-500">
-                Member since{" "}
-                {new Date(user.createdAt).toLocaleDateString("en-IN", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </p>
-            )}
-          </div>
+    <main className="min-h-[calc(100vh-160px)] bg-stone-50" suppressHydrationWarning>
+      <div className="mx-auto max-w-4xl px-6 py-14 lg:px-10">
 
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-amber-100 text-2xl font-semibold text-amber-800">
-            {initial}
-          </div>
-        </div>
+        {/* ===== Header banner ===== */}
+        <section className="relative overflow-hidden rounded-3xl bg-[#211a15] px-8 py-12 text-stone-100 shadow-xl shadow-stone-300/40 sm:px-10">
+          <div className="pointer-events-none absolute -top-20 -right-16 h-64 w-64 rounded-full bg-amber-600/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-10 h-56 w-56 rounded-full bg-[#c2703d]/10 blur-3xl" />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+              backgroundSize: "18px 18px",
+            }}
+          />
 
-        <dl className="mt-8 divide-y divide-stone-200 rounded-xl border border-stone-200">
-          <div className="flex flex-col gap-1 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <dt className="text-sm text-stone-500">Email</dt>
-            <dd className="font-medium text-stone-900">{user.email}</dd>
-          </div>
-          <div className="flex flex-col gap-1 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <dt className="text-sm text-stone-500">Mobile</dt>
-            <dd className="font-medium text-stone-900">
-              {user.mobile || "Not added"}
-            </dd>
-          </div>
-        </dl>
+          <div className="relative flex flex-col items-start gap-8 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-6">
+              <div className="relative flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 p-[2px] shadow-lg shadow-amber-900/30">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-[#211a15] font-serif text-2xl font-semibold text-amber-400">
+                  {initial}
+                </div>
+              </div>
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href="/profile/edit"
-            className="inline-flex items-center gap-2 rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-amber-300 hover:text-amber-700"
-          >
-            <Pencil className="h-4 w-4" />
-            Edit profile
-          </Link>
-          <Link
-            href="/orders"
-            className="inline-flex items-center gap-2 rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-amber-300 hover:text-amber-700"
-          >
-            <Package className="h-4 w-4" />
-            My orders
-          </Link>
-          <Link
-            href="/addresses"
-            className="inline-flex items-center gap-2 rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-amber-300 hover:text-amber-700"
-          >
-            <MapPin className="h-4 w-4" />
-            Addresses
-          </Link>
-          <Link
-            href="/logout"
-            className="inline-flex items-center gap-2 rounded-lg border border-stone-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:border-red-300 hover:bg-red-50"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </Link>
-        </div>
-      </section>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-amber-500">
+                  My account
+                </p>
+                <h1 className="mt-1.5 font-serif text-[28px] leading-tight text-stone-50 sm:text-3xl">
+                  {user.name}
+                </h1>
+                {memberSince && (
+                  <p
+                    className="mt-2 flex items-center gap-1.5 text-sm text-stone-400"
+                    suppressHydrationWarning
+                  >
+                    <Calendar className="h-3.5 w-3.5" />
+                    Member since {memberSince}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <LogoutButton />
+          </div>
+        </section>
+
+        {/* ===== Contact details with Inline Edit ===== */}
+        <ProfileContact user={user} />
+
+        {/* ===== My Orders (inline expandable) ===== */}
+        <ProfileOrders />
+
+        {/* ===== Addresses (inline expandable) ===== */}
+        <ProfileAddresses user={user} />
+
+      </div>
     </main>
   );
 }

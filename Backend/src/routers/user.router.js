@@ -1,16 +1,24 @@
-import express from "express" 
+import express from "express";
 const router = express.Router();
-import {register,login ,otpVarify,getme,addAddress,deleteAddress}  from "../controllers/user.controller.js";
+import {
+  register,
+  login,
+  otpVarify,
+  getme,
+  updateProfile,
+  addAddress,
+  deleteAddress,
+  logout,
+} from "../controllers/user.controller.js";
 import { protect } from "../middlewares/auth.js";
 
-
-router.post("/register",register);
-router.post("/login",login);
-router.post("/verify_otp",otpVarify);
-router.get("/get-me",protect, getme)
-router.post("/add-address",protect, addAddress);
+router.post("/register", register);
+router.post("/login", login);
+router.post("/verify_otp", otpVarify);
+router.get("/get-me", protect, getme);
+router.put("/update-profile", protect, updateProfile);
+router.post("/add-address", protect, addAddress);
 router.delete("/delete-address/:addressId", protect, deleteAddress);
+router.post("/logout", logout);
 
 export default router;
-
-

@@ -15,6 +15,30 @@ var instance = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+// USER: GET MY ORDERS
+export const getUserOrders = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const orders = await OrderModel.find({ user: userId })
+      .populate("items.product_id", "title thumbnail slug")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      message: "Orders fetched successfully",
+      data: orders,
+    });
+  } catch (error) {
+    console.error("Get User Orders Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch orders",
+      error: error.message,
+    });
+  }
+};
+
 // ADMIN: GET ALL ORDERS
 export const getOrders = async (req, res) => {
   try {

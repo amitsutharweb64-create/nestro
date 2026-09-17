@@ -4,6 +4,7 @@ import Header from "../components/website/Header";
 import Footer from "../components/website/Footer";
 import StoreProvider from "@/redux/StoreProvider";
 import { getme } from "@/api/api";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default async function RootLayout({ children }) {
   <Header profile ={profile} />
         {children} 
         <Footer/>
+        <Toaster richColors position="top-right" />
         </StoreProvider>
     
           </body>   

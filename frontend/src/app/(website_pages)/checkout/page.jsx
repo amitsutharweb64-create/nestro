@@ -28,6 +28,21 @@ export default function CheckoutPage() {
     try {
       setIsPlacingOrder(true);
 
+      // The order and cart endpoints are protected. Check the session first so
+      // a missing/expired login does not surface as a generic Axios error after
+      // the user has filled out the checkout form.
+      try {
+        await client.get("/user/get-me");
+      } catch (error) {
+        if (error.response?.status === 401) {
+          toast.error("Your session has expired. Please sign in to place an order.");
+          router.push("/sign_in");
+          return;
+        }
+
+        throw error;
+      }
+
       // Check address
       if (!selectedAddress) {
         alert("Please select a shipping address");

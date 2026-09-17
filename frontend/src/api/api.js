@@ -228,4 +228,18 @@ export const fetchInquiryById = async (id) => {
   }
 };
 
+export const updateUserProfile = async ({ name, mobile }) => {
+  try {
+    const response = await client.put("/user/update-profile", { name, mobile });
+    return response.data;
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error.response?.data?.message || "Failed to update profile",
+    };
+  }
+};
+
+
 
