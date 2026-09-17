@@ -305,4 +305,3 @@ export const updateProfile = async (req, res) => {
     return sendServerError(res, error);
   }
 };
-
