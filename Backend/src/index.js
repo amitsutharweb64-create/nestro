@@ -19,14 +19,16 @@ const app = express();
 connectDB();
 
 // Middlewares
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    process.env.FRONTEND_URL,
-  ].filter(Boolean),
-  credentials: true,
-}));
+
+  app.use(cors({
+    origin: [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://nestro-git-main-amit-suthar-s-projects.vercel.app",
+      process.env.FRONTEND_URL,
+    ].filter(Boolean),
+    credentials: true,
+  }));
 
 app.use(cookieParser());
 app.use(express.json());
