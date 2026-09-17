@@ -12,6 +12,14 @@ import {
 } from "../utils/response.js";
 import sendOtpMail from "../utils/sendOtpmail.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  path: "/",
+};
+
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -121,11 +129,8 @@ export const login = async (req, res) => {
 
     // Create a session only after all login checks pass.
     res.cookie("token", token, {
+      ...cookieOptions,
       maxAge: 60 * 60 * 1000,
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      path: "/",
     });
 
     return sendSuccess(res, "Login successful.");
@@ -261,12 +266,7 @@ export const deleteAddress = async (req, res) => {
 // LOGOUT
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      path: "/",
-    });
+    res.clearCookie("token", cookieOptions);
     return sendSuccess(res, "Logged out successfully");
   } catch (error) {
     return sendServerError(res);
