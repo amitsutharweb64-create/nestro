@@ -5,6 +5,10 @@ const sendOtpMail = async (toEmail, otp) => {
     const emailUser = process.env.EMAIL_USER?.replace(/^["']|["']$/g, "").trim();
     const emailPass = process.env.EMAIL_PASS?.replace(/^["']|["']$/g, "").trim();
 
+    if (!emailUser || !emailPass) {
+      throw new Error("EMAIL_USER or EMAIL_PASS environment variable is missing on server");
+    }
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
