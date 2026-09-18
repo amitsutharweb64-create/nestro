@@ -4,44 +4,30 @@ import { useState } from "react";
 import { ShoppingCart, Check } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/redux/features/cartSlice";
-import { useRouter } from "next/navigation";
-import { client } from "@/utils/helper";
 
 export default function CartBtn({ product, onAddToCart }) {
   const dispatcher = useDispatch();
-  const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
 
-  async function carthandler() {
-    try {
-      const response = await client.get("/user/get-me");
+  function carthandler() {
+    dispatcher(
+      addToCart({
+        _id: product._id,
+        name: product.title || product.name,
+        slug: product.slug,
+        salePrice: product.salePrice,
+        originalPrice: product.originalPrice || product.price,
+        thumbnail: product.thumbnail,
+        qty: 1,
+      })
+    );
 
-      if (!response.data?.success || !response.data?.user) {
-        router.push("/sign_in");
-        return;
-      }
+    setIsAdding(true);
+    onAddToCart?.(product);
 
-      dispatcher(
-        addToCart({
-          _id: product._id,
-          name: product.title || product.name,
-          slug: product.slug,
-          salePrice: product.salePrice,
-          originalPrice: product.originalPrice || product.price,
-          thumbnail: product.thumbnail,
-          qty: 1,
-        })
-      );
-
-      setIsAdding(true);
-      onAddToCart?.(product);
-
-      setTimeout(() => {
-        setIsAdding(false);
-      }, 900);
-    } catch (error) {
-      router.push("/sign_in");
-    }
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 900);
   }
 
   const handleAddToCart = (e) => {

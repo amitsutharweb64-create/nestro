@@ -6,6 +6,19 @@ const client = axios.create({
   withCredentials: true,
 });
 
+// Client-side requests (browser) can't rely on the cross-domain backend
+// cookie always being sent. Attach the token from our own domain's
+// cookie (set at login) as an Authorization header on every request.
+client.interceptors.request.use((config) => {
+  if (typeof document !== "undefined") {
+    const match = document.cookie.match(/(?:^|;\s*)token=([^;]+)/);
+    if (match) {
+      config.headers.Authorization = `Bearer ${match[1]}`;
+    }
+  }
+  return config;
+});
+
 function generateSlug(text) {
   return text
     .trim()
