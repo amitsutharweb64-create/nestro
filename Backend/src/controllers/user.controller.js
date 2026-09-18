@@ -30,11 +30,16 @@ export const register = async (req, res) => {
         return sendConflict(res, "This email is already registered. Please sign in instead.");
       }
 
+      // Existing unverified account: refresh OTP and expiry time.
       const otp = Math.floor(100000 + Math.random() * 900000);
-      user.otp = otp;
-      user.otpExpire = Date.now() + 3 * 60 * 1000;
-      await user.save();
+      const otpExpire = Date.now() + 3 * 60 * 1000;
       await sendOtpMail(normalizedEmail, otp);
+
+      user.name = name;
+      user.password = cryptr.encrypt(password);
+      user.otp = otp;
+      user.otpExpire = otpExpire;
+      await user.save();
 
       return res.status(200).json({
         success: true,
@@ -42,75 +47,77 @@ export const register = async (req, res) => {
         email: normalizedEmail,
       });
     }
+
     const encryptedPass = cryptr.encrypt(password);
     const otp = Math.floor(100000 + Math.random() * 900000);
-    const otpExpire = Date.now() + 3 * 60 * 1000
-    await sendOtpMail(normalizedEmail, otp)
+    const otpExpire = Date.now() + 3 * 60 * 1000;
+
+    await sendOtpMail(normalizedEmail, otp);
+
     await userModel.create({
-      name, email: normalizedEmail, password: encryptedPass, otp, otpExpire
+      name,
+      email: normalizedEmail,
+      password: encryptedPass,
+      otp,
+      otpExpire,
     });
 
     return res.status(201).json({
-      message: "user Account crate",
+      message: "User account created successfully. Please verify OTP sent to your email.",
       success: true,
-      email: normalizedEmail
-    })
-
+      email: normalizedEmail,
+    });
   } catch (error) {
-    return sendServerError(res);
+    console.error("Registration error:", error);
+    return sendServerError(res, error);
   }
 };
-export const getme = async (req, res) => {
-  try {
-    const user = req.user;
-    console.log(user)
-
-    return res.status(200).json({
-      message: "user data find ",
-      success: true,
-      user
-    })
-  } catch (error) {
-    sendServerError(res)
-  }
-}
 
 export const otpVarify = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const user = await userModel.findOne({ email: email.trim().toLowerCase() });
-    if (!user) return sendNotFound(res, "Account not found.");
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await userModel.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      return sendNotFound(res, "User not found");
+    }
+
     if (user.isVerified) {
-      return sendSuccess(res, "Email is already verified.");
+      return sendBadRequest(res, "Account is already verified. Please login.");
     }
-    if (user.otp != Number(otp)) return sendBadRequest(res, "Invalid OTP.");
-    if (!user.otpExpire || user.otpExpire.getTime() < Date.now()) {
-      return sendBadRequest(res, "OTP has expired. Please request a new one.");
+
+    if (!user.otp || !user.otpExpire) {
+      return sendBadRequest(res, "No active OTP found. Please request a new OTP.");
     }
+
+    if (Date.now() > Number(user.otpExpire)) {
+      return sendBadRequest(res, "OTP has expired. Please request a new OTP.");
+    }
+
+    if (String(user.otp).trim() !== String(otp).trim()) {
+      return sendBadRequest(res, "Invalid OTP.");
+    }
+
     user.isVerified = true;
-    user.otp = undefined;
-    user.otpExpire = undefined;
+    user.otp = null;
+    user.otpExpire = null;
     await user.save();
 
-    return sendSuccess(res, "OTP verified successfully.");
-
+    return sendSuccess(res, "OTP verified successfully. You can now login.");
   } catch (error) {
-    return sendServerError(res);
+    return sendServerError(res, error);
   }
 };
-
 
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return sendBadRequest(res, "Email and password are required.");
-    }
-
     const normalizedEmail = email.trim().toLowerCase();
     const user = await userModel.findOne({ email: normalizedEmail });
-    if (!user) return sendNotFound(res, "Account not found.");
+    if (!user) {
+      return sendNotFound(res, "User not found.");
+    }
 
     const decryptedPassword = cryptr.decrypt(user.password);
     if (password !== decryptedPassword) {
@@ -133,7 +140,18 @@ export const login = async (req, res) => {
       maxAge: 60 * 60 * 1000,
     });
 
-    return sendSuccess(res, "Login successful.");
+    return res.status(200).json({
+      success: true,
+      message: "Login successful.",
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        role: user.role,
+      },
+    });
   } catch (error) {
     return sendServerError(res, error);
   }
@@ -148,27 +166,21 @@ export const addAddress = async (req, res) => {
     const userId = req.user._id;
 
     const {
-      fullName,
+      name,
       mobile,
-      pincode,
-      addressLine,
+      address,
       city,
       state,
-      country,
-      isDefault,
+      pincode,
+      landmark,
+      isDefault
     } = req.body;
 
-    if (
-      !fullName ||
-      !mobile ||
-      !pincode ||
-      !addressLine ||
-      !city ||
-      !state
-    ) {
+    // Basic validation
+    if (!name || !mobile || !address || !city || !state || !pincode) {
       return res.status(400).json({
         success: false,
-        message: "All required address fields are required",
+        message: "Please fill all required address fields"
       });
     }
 
@@ -177,48 +189,50 @@ export const addAddress = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "User not found"
       });
     }
 
-    // Agar new address ko default banana hai
+    // If this address is set to default, unset other default addresses
     if (isDefault) {
-      user.addresses.forEach((address) => {
-        address.isDefault = false;
+      user.addresses.forEach(addr => {
+        addr.isDefault = false;
       });
     }
 
-    // Agar user ka first address hai to automatically default
-    const makeDefault = user.addresses.length === 0 ? true : !!isDefault;
+    // If first address, make it default automatically
+    const defaultStatus = user.addresses.length === 0 ? true : Boolean(isDefault);
 
-    user.addresses.push({
-      fullName,
+    const newAddress = {
+      name,
       mobile,
-      pincode,
-      addressLine,
+      address,
       city,
       state,
-      country: country || "India",
-      isDefault: makeDefault,
-    });
+      pincode,
+      landmark,
+      isDefault: defaultStatus
+    };
+
+    user.addresses.push(newAddress);
 
     await user.save();
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
       message: "Address added successfully",
-      addresses: user.addresses,
+      addresses: user.addresses
     });
-  } catch (error) {
-    console.log("Add Address Error:", error);
 
-    return res.status(500).json({
+  } catch (error) {
+    console.error("Add address error:", error);
+    res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: "Failed to add address",
+      error: error.message
     });
   }
 };
-
 
 // DELETE ADDRESS
 export const deleteAddress = async (req, res) => {
@@ -231,76 +245,94 @@ export const deleteAddress = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "User not found"
       });
     }
 
-    const address = user.addresses.id(addressId);
-
-    if (!address) {
+    // Check if address exists
+    const addressExists = user.addresses.id(addressId);
+    if (!addressExists) {
       return res.status(404).json({
         success: false,
-        message: "Address not found",
+        message: "Address not found"
       });
     }
 
-    address.deleteOne();
+    // Pull address from array
+    user.addresses.pull(addressId);
+
+    // If the deleted address was default and other addresses exist, make first one default
+    if (addressExists.isDefault && user.addresses.length > 0) {
+      user.addresses[0].isDefault = true;
+    }
 
     await user.save();
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Address deleted successfully",
-      addresses: user.addresses,
+      addresses: user.addresses
     });
-  } catch (error) {
-    console.log("Delete Address Error:", error);
 
-    return res.status(500).json({
+  } catch (error) {
+    console.error("Delete address error:", error);
+    res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: "Failed to delete address",
+      error: error.message
     });
   }
 };
 
-// LOGOUT
-export const logout = async (req, res) => {
+export const getme = async (req, res) => {
   try {
-    res.clearCookie("token", cookieOptions);
-    return sendSuccess(res, "Logged out successfully");
+    const user = req.user;
+    if (!user) {
+      return sendNotFound(res, "User not found");
+    }
+
+    return sendSuccess(res, "User found successfully", user);
   } catch (error) {
-    return sendServerError(res);
+    return sendServerError(res, error);
   }
 };
 
-// UPDATE PROFILE
 export const updateProfile = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const user = req.user;
     const { name, mobile } = req.body;
 
     if (!name || !name.trim()) {
-      return sendBadRequest(res, "Name is required.");
+      return sendBadRequest(res, "Name is required");
     }
 
-    const updatedUser = await userModel.findByIdAndUpdate(
-      userId,
-      {
-        name: name.trim(),
-        mobile: mobile ? mobile.trim() : null,
-      },
-      { new: true }
-    ).select("-password -otp -otpExpire");
-
-    if (!updatedUser) {
-      return sendNotFound(res, "User not found.");
+    user.name = name.trim();
+    if (mobile !== undefined) {
+      user.mobile = mobile.trim();
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Profile updated successfully.",
-      user: updatedUser,
+    await user.save();
+
+    return sendSuccess(res, "Profile updated successfully", {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      mobile: user.mobile,
+      role: user.role,
     });
+  } catch (error) {
+    return sendServerError(res, error);
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      ...cookieOptions,
+      maxAge: 0,
+    });
+
+    return sendSuccess(res, "Logged out successfully");
   } catch (error) {
     return sendServerError(res, error);
   }

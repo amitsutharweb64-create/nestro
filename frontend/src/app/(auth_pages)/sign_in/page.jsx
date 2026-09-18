@@ -59,6 +59,11 @@ export default function SigninPage() {
       console.log("Login Response:", response.data);
 
       if (response.data.success) {
+        // Save token to frontend cookie for server-side profile access
+        if (response.data.token) {
+          document.cookie = `token=${response.data.token}; path=/; max-age=86400; SameSite=Lax`;
+        }
+
         try {
           // Sync cart after login
           const cart_response = await client.post("cart/sync", {
@@ -278,4 +283,3 @@ export default function SigninPage() {
     </div>
   );
 }
-

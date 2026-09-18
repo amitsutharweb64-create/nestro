@@ -163,9 +163,18 @@ export const getme = async () => {
     const { cookies } = await import("next/headers");
     const cookie = await cookies();
     const token = cookie.get("token")?.value;
-    const response = await client.get("user/get-me", {
+
+    if (!token) {
+      return {
+        message: "not logged in",
+        success: false,
+        user: null,
+      };
+    }
+
+    const response = await client.get("/user/get-me", {
       headers: {
-        Authorization: token,
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -240,6 +249,3 @@ export const updateUserProfile = async ({ name, mobile }) => {
     };
   }
 };
-
-
-

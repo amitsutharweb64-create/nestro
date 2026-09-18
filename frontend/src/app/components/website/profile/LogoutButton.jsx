@@ -17,6 +17,9 @@ export default function LogoutButton() {
       setLoading(true);
       await client.post("/user/logout").catch(() => {});
 
+      // Clear cookie on frontend
+      document.cookie = "token=; path=/; max-age=0;";
+
       // Clear cart and local storage
       dispatcher(emptyCart());
       try {
@@ -29,6 +32,7 @@ export default function LogoutButton() {
       router.refresh();
     } catch (error) {
       console.error("Logout error:", error);
+      document.cookie = "token=; path=/; max-age=0;";
       router.push("/sign_in");
     } finally {
       setLoading(false);
