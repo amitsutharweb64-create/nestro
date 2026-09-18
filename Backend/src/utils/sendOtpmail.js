@@ -2,18 +2,22 @@ import nodemailer from "nodemailer";
 
 const sendOtpMail = async (toEmail, otp) => {
   try {
+    const emailUser = process.env.EMAIL_USER?.replace(/^["']|["']$/g, "").trim();
+    const emailPass = process.env.EMAIL_PASS?.replace(/^["']|["']$/g, "").trim();
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
-      port: 587,
-      secure: false,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: emailUser,
+        pass: emailPass,
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 5000,
+      socketTimeout: 15000,
     });
 
     const mailOptions = {
-      from: `"Nestro Website" <${process.env.EMAIL_USER}>`,
+      from: `"Nestro Website" <${emailUser}>`,
       to: toEmail,
       subject: "Verify Your Email - OTP",
       html: `
@@ -29,9 +33,9 @@ const sendOtpMail = async (toEmail, otp) => {
 
     await transporter.sendMail(mailOptions);
 
-    console.log("OTP email sent successfully");
+    console.log("OTP email sent successfully to", toEmail);
   } catch (error) {
-    console.log("OTP email sending error:", error);
+    console.error("OTP email sending error:", error);
     throw error;
   }
 };
