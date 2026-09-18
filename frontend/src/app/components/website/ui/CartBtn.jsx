@@ -4,23 +4,12 @@ import { useState } from "react";
 import { ShoppingCart, Check } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/redux/features/cartSlice";
-import { useRouter } from "next/navigation";
-import { client } from "@/utils/helper";
 
 export default function CartBtn({ product, onAddToCart }) {
   const dispatcher = useDispatch();
-  const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
 
-  async function carthandler() {
-    try {
-      const response = await client.get("/user/get-me");
-
-      if (!response.data?.success || !response.data?.user) {
-        router.push("/sign_in");
-        return;
-      }
-  
+  function carthandler() {
       dispatcher(
         addToCart({
           _id: product._id,
@@ -39,9 +28,6 @@ export default function CartBtn({ product, onAddToCart }) {
       setTimeout(() => {
         setIsAdding(false);
       }, 900);
-    } catch (error) {
-      router.push("/sign_in");
-    }
   }
 
   const handleAddToCart = (e) => {

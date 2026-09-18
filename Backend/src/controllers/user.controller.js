@@ -166,21 +166,20 @@ export const addAddress = async (req, res) => {
     const userId = req.user._id;
 
     const {
-      name,
+      fullName,
       mobile,
-      address,
+      pincode,
+      addressLine,
       city,
       state,
-      pincode,
-      landmark,
-      isDefault
+      country,
+      isDefault,
     } = req.body;
 
-    // Basic validation
-    if (!name || !mobile || !address || !city || !state || !pincode) {
+    if (!fullName || !mobile || !pincode || !addressLine || !city || !state) {
       return res.status(400).json({
         success: false,
-        message: "Please fill all required address fields"
+        message: "Please fill all required address fields",
       });
     }
 
@@ -193,35 +192,31 @@ export const addAddress = async (req, res) => {
       });
     }
 
-    // If this address is set to default, unset other default addresses
     if (isDefault) {
       user.addresses.forEach(addr => {
         addr.isDefault = false;
       });
     }
 
-    // If first address, make it default automatically
     const defaultStatus = user.addresses.length === 0 ? true : Boolean(isDefault);
 
-    const newAddress = {
-      name,
+    user.addresses.push({
+      fullName,
       mobile,
-      address,
+      pincode,
+      addressLine,
       city,
       state,
-      pincode,
-      landmark,
-      isDefault: defaultStatus
-    };
-
-    user.addresses.push(newAddress);
+      country: country || "India",
+      isDefault: defaultStatus,
+    });
 
     await user.save();
 
     res.status(201).json({
       success: true,
       message: "Address added successfully",
-      addresses: user.addresses
+      addresses: user.addresses,
     });
 
   } catch (error) {

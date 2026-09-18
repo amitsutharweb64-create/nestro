@@ -206,9 +206,9 @@ export default function Header({ profile = null }) {
                   isActive
                     ? "bg-amber-50 text-amber-800"
                     : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
-                    }`}
+                }`}
               >
-                {link.label}        
+                {link.label}
               </Link>
             );
           })}
