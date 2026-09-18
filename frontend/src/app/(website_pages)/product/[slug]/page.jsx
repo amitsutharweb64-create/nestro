@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 
 import { fetchProducts } from "@/api/api";
+import { addToCart } from "@/redux/features/cartSlice";
 
 import {
   Star,
@@ -49,6 +52,8 @@ const colors = [
 export default function ProductDetailsPage() {
 
   const { slug } = useParams();
+  const router = useRouter();
+  const dispatcher = useDispatch();
 
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,6 +95,18 @@ export default function ProductDetailsPage() {
 
         setSelectedImage(0);
         setProduct({
+
+          _id: foundProduct._id,
+
+          title: foundProduct.title,
+
+          slug: foundProduct.slug,
+
+          salePrice: foundProduct.salePrice || foundProduct.price,
+
+          originalPrice: foundProduct.price,
+
+          thumbnail: foundProduct.thumbnail,
 
           name: foundProduct.title,
 
@@ -162,6 +179,28 @@ export default function ProductDetailsPage() {
       prev > 1 ? prev - 1 : 1
     );
 
+  };
+
+  const addProductToCart = () => {
+    for (let count = 0; count < quantity; count += 1) {
+      dispatcher(
+        addToCart({
+          _id: product._id,
+          name: product.name,
+          title: product.title,
+          slug: product.slug,
+          salePrice: product.salePrice,
+          originalPrice: product.originalPrice,
+          thumbnail: product.thumbnail,
+          qty: 1,
+        })
+      );
+    }
+  };
+
+  const handleBuyNow = () => {
+    addProductToCart();
+    router.push("/checkout");
   };
 
 
@@ -671,6 +710,7 @@ export default function ProductDetailsPage() {
 
               <button
                 type="button"
+                onClick={addProductToCart}
                 className="flex h-13 items-center justify-center gap-2 rounded-xl bg-[#1d1a18] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#2c2825]"
               >
 
@@ -686,6 +726,7 @@ export default function ProductDetailsPage() {
 
               <button
                 type="button"
+                onClick={handleBuyNow}
                 className="h-13 rounded-xl border border-[#c85a00] px-6 py-3.5 text-sm font-semibold text-[#c85a00] transition hover:bg-[#c85a00] hover:text-white"
               >
 
