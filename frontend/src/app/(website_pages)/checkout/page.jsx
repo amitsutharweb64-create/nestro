@@ -5,7 +5,7 @@ import ShippingForm from "@/components/website/checkout/ShippingForm.jsx";
 import PaymentMethod from "@/components/website/checkout/PaymentMethod.jsx";
 import OrderSummary from "@/components/website/checkout/OrderSummary.jsx";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { client } from "@/utils/helper";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,18 @@ export default function CheckoutPage() {
   const [paymentMode, setPaymentMode] = useState("cod");
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        await client.get("/user/get-me");
+      } catch {
+        router.push("/sign_in");
+      }
+    };
+
+    checkLogin();
+  }, [router]);
 
   async function orderHandler() {
     if (isPlacingOrder) return;

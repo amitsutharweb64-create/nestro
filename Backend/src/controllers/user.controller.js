@@ -286,7 +286,11 @@ export const getme = async (req, res) => {
       return sendNotFound(res, "User not found");
     }
 
-    return sendSuccess(res, "User found successfully", user);
+    return res.status(200).json({
+      success: true,
+      message: "User found successfully",
+      user,
+    });
   } catch (error) {
     return sendServerError(res, error);
   }
