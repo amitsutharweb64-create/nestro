@@ -162,26 +162,52 @@ export default function Header({ profile = null }) {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen((prev) => !prev)}
-          aria-label="Toggle menu"
-          aria-expanded={isOpen}
-          aria-controls="mobile-menu"
-          className="text-stone-800 md:hidden"
-        >
-          {isOpen ? (
-            <X
-              className="h-6 w-6"
-              strokeWidth={1.5}
+        <div className="flex items-center gap-5 md:hidden">
+          <button
+            aria-label="Search"
+            className="text-stone-700"
+          >
+            <Search
+              className="h-5 w-5"
+              strokeWidth={1.75}
             />
-          ) : (
-            <Menu
-              className="h-6 w-6"
-              strokeWidth={1.5}
+          </button>
+
+          <Link
+            href="/cart"
+            aria-label="Cart"
+            className="relative text-stone-700"
+          >
+            <ShoppingBag
+              className="h-5 w-5"
+              strokeWidth={1.75}
             />
-          )}
-        </button>
+
+            <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-amber-700 text-[10px] font-medium text-white">
+              {cart?.items?.length || 0}
+            </span>
+          </Link>
+
+          <button
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
+            className="text-stone-800"
+          >
+            {isOpen ? (
+              <X
+                className="h-6 w-6"
+                strokeWidth={1.5}
+              />
+            ) : (
+              <Menu
+                className="h-6 w-6"
+                strokeWidth={1.5}
+              />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu Panel */}
@@ -242,37 +268,6 @@ export default function Header({ profile = null }) {
             </Link>
           )}
 
-          {/* Mobile Search + Cart */}
-          <div className="mt-2 flex items-center gap-5 border-t border-stone-200 pt-4">
-
-            {/* Search */}
-            <button
-              aria-label="Search"
-              className="text-stone-700"
-            >
-              <Search
-                className="h-5 w-5"
-                strokeWidth={1.75}
-              />
-            </button>
-
-            {/* Cart */}
-            <Link
-              href="/cart"
-              aria-label="Cart"
-              className="relative text-stone-700"
-            >
-              <ShoppingBag
-                className="h-5 w-5"
-                strokeWidth={1.75}
-              />
-
-              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-amber-700 text-[10px] font-medium text-white">
-                {cart?.items?.length || 0}
-              </span>
-            </Link>
-
-          </div>
         </nav>
       </div>
     </header>

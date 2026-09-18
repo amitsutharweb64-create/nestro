@@ -7,7 +7,7 @@ export default function CategoryGrid({ categories = [] }) {
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16 lg:px-10 border-b border-stone-100">
+    <section className="mx-auto max-w-7xl border-b border-stone-100 px-3 py-9 sm:px-6 sm:py-16 lg:px-10">
       <div className="flex items-end justify-between">
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-amber-700">
@@ -27,14 +27,14 @@ export default function CategoryGrid({ categories = [] }) {
         </Link>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
+      <div className="mt-6 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-none pb-2 sm:mt-8 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible sm:pb-0 sm:snap-none lg:grid-cols-6 xl:grid-cols-7">
         {categories.map((category) => (
           <Link
             key={category._id}
             href={`/store?category=${category.slug}`}
-            className="group flex flex-col items-center gap-3 rounded-2xl p-3 text-center transition duration-300 hover:bg-stone-50"
+            className="group flex w-25 shrink-0 snap-start flex-col items-center gap-2.5 rounded-2xl p-1.5 text-center transition duration-300 hover:bg-stone-50 sm:w-auto sm:shrink sm:gap-3 sm:p-3"
           >
-            <div className="h-20 w-20 sm:h-24 sm:w-24 overflow-hidden rounded-full ring-2 ring-stone-200 bg-stone-100 transition-all duration-300 group-hover:ring-amber-500 group-hover:shadow-md">
+            <div className="h-19 w-19 overflow-hidden rounded-full bg-stone-100 ring-2 ring-stone-200 transition-all duration-300 group-hover:ring-amber-500 group-hover:shadow-md sm:h-24 sm:w-24">
               <img
                 src={category.image || "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=300&q=80"}
                 alt={category.name}
