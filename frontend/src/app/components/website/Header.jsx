@@ -46,11 +46,11 @@ export default function Header({ profile = null }) {
           dispatcher(lsToCart());
         } else {
           setUser(null);
-          dispatcher(emptyCart());
+          // dispatcher(emptyCart());
         }
       } catch (error) {
         setUser(null);
-        dispatcher(emptyCart());
+        // dispatcher(emptyCart());
       }
     };
 
