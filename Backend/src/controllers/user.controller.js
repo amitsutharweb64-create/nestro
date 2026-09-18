@@ -1,6 +1,6 @@
 import userModel from "../models/user.model.js";
 import Cryptr from 'cryptr';
-const cryptr = new Cryptr(process.env.SECRET_KEY || "WSCUBETECH@123");
+const cryptr = new Cryptr(process.env.SECRET_KEY);
 import jwt from 'jsonwebtoken'
 
 import {
@@ -23,10 +23,6 @@ const cookieOptions = {
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      return sendBadRequest(res, "Name, email, and password are required.");
-    }
-
     const normalizedEmail = email.trim().toLowerCase();
     const user = await userModel.findOne({ email: normalizedEmail });
     if (user) {
@@ -48,21 +44,20 @@ export const register = async (req, res) => {
     }
     const encryptedPass = cryptr.encrypt(password);
     const otp = Math.floor(100000 + Math.random() * 900000);
-    const otpExpire = Date.now() + 3 * 60 * 1000;
-    await sendOtpMail(normalizedEmail, otp);
+    const otpExpire = Date.now() + 3 * 60 * 1000
+    await sendOtpMail(normalizedEmail, otp)
     await userModel.create({
       name, email: normalizedEmail, password: encryptedPass, otp, otpExpire
     });
 
     return res.status(201).json({
-      message: "User account created successfully. Please verify OTP sent to your email.",
+      message: "user Account crate",
       success: true,
       email: normalizedEmail
-    });
+    })
 
   } catch (error) {
-    console.error("Register Error:", error);
-    return sendServerError(res, error);
+    return sendServerError(res);
   }
 };
 export const getme = async (req, res) => {
@@ -76,7 +71,7 @@ export const getme = async (req, res) => {
       user
     })
   } catch (error) {
-    sendServerError(res, error)
+    sendServerError(res)
   }
 }
 
@@ -100,7 +95,7 @@ export const otpVarify = async (req, res) => {
     return sendSuccess(res, "OTP verified successfully.");
 
   } catch (error) {
-    return sendServerError(res, error);
+    return sendServerError(res);
   }
 };
 
@@ -274,7 +269,7 @@ export const logout = async (req, res) => {
     res.clearCookie("token", cookieOptions);
     return sendSuccess(res, "Logged out successfully");
   } catch (error) {
-    return sendServerError(res, error);
+    return sendServerError(res);
   }
 };
 

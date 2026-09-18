@@ -15,6 +15,7 @@ const sendCreated = (res, message = "Created successfully", data = {}) => {
   });
 };
 
+
 // bad request (validation errors)
 const sendBadRequest = (res, message = "Bad request") => {
   return res.status(400).json({
@@ -41,11 +42,10 @@ const sendConflict = (res, message = "Data already exists") => {
 
 // server error
 const sendServerError = (res, error) => {
-  console.error("Server Error:", error);
+  console.error(error);
   return res.status(500).json({
     success: false,
-    message: error?.message || "Internal server error",
-    error: process.env.NODE_ENV !== "production" ? error?.message : undefined
+    message: "Internal server error"
   });
 };
 
