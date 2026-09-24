@@ -17,7 +17,7 @@ export const read = async (req, res) => {
     console.log(query);
     const filter = {};
     const sortFilter = {};
-    const limit = query.limit ? parseInt(query.limit) : 2;
+    const limit = query.limit ? parseInt(query.limit) : 1000;
     const page = query.page || 1;
     const skip = (page - 1) * limit;
 
