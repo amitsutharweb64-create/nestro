@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Check, Hash, Loader2, MapPin, Phone, User } from "lucide-react";
 import { client } from "@/utils/helper";
 
 function AddressCard({ address, selectedAddress,
@@ -152,28 +153,151 @@ export default function ShippingForm({ selectedAddress, onAddressChange }) {
       {showAddressForm && (
         <form
           onSubmit={addAddress}
-          className="mb-5 rounded-md border border-stone-300 p-4"
+          className="mb-5 rounded-2xl border border-stone-200 bg-stone-50/60 p-5"
         >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <input name="fullName" value={addressForm.fullName} onChange={updateAddressField} placeholder="Full name" required className="rounded border border-stone-300 px-3 py-2 text-sm" />
-            <input name="mobile" value={addressForm.mobile} onChange={updateAddressField} placeholder="Mobile number" required className="rounded border border-stone-300 px-3 py-2 text-sm" />
-            <input name="pincode" value={addressForm.pincode} onChange={updateAddressField} placeholder="Pincode" required className="rounded border border-stone-300 px-3 py-2 text-sm" />
-            <input name="city" value={addressForm.city} onChange={updateAddressField} placeholder="City" required className="rounded border border-stone-300 px-3 py-2 text-sm" />
-            <input name="state" value={addressForm.state} onChange={updateAddressField} placeholder="State" required className="rounded border border-stone-300 px-3 py-2 text-sm" />
-            <input name="country" value={addressForm.country} onChange={updateAddressField} placeholder="Country" className="rounded border border-stone-300 px-3 py-2 text-sm" />
-            <textarea name="addressLine" value={addressForm.addressLine} onChange={updateAddressField} placeholder="House / street address" required className="min-h-20 rounded border border-stone-300 px-3 py-2 text-sm sm:col-span-2" />
+          <h3 className="mb-4 font-serif text-base tracking-tight text-stone-900">
+            New address
+          </h3>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                Full Name <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <User className="pointer-events-none absolute inset-y-0 left-0 my-auto ml-3.5 h-4 w-4 text-stone-400" />
+                <input
+                  type="text"
+                  name="fullName"
+                  value={addressForm.fullName}
+                  onChange={updateAddressField}
+                  placeholder="Full name"
+                  required
+                  className="w-full rounded-xl border border-stone-300 bg-white py-2.5 pl-10 pr-3.5 text-sm text-stone-900 transition focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                Mobile <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Phone className="pointer-events-none absolute inset-y-0 left-0 my-auto ml-3.5 h-4 w-4 text-stone-400" />
+                <input
+                  type="tel"
+                  name="mobile"
+                  value={addressForm.mobile}
+                  onChange={updateAddressField}
+                  placeholder="+91 9876543210"
+                  required
+                  className="w-full rounded-xl border border-stone-300 bg-white py-2.5 pl-10 pr-3.5 text-sm text-stone-900 transition focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                Address <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <MapPin className="pointer-events-none absolute inset-y-0 left-0 my-auto ml-3.5 h-4 w-4 text-stone-400" />
+                <input
+                  type="text"
+                  name="addressLine"
+                  value={addressForm.addressLine}
+                  onChange={updateAddressField}
+                  placeholder="House no., Street, Area"
+                  required
+                  className="w-full rounded-xl border border-stone-300 bg-white py-2.5 pl-10 pr-3.5 text-sm text-stone-900 transition focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                City <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="city"
+                value={addressForm.city}
+                onChange={updateAddressField}
+                placeholder="City"
+                required
+                className="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm text-stone-900 transition focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                State <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="state"
+                value={addressForm.state}
+                onChange={updateAddressField}
+                placeholder="State"
+                required
+                className="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm text-stone-900 transition focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                Pincode <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Hash className="pointer-events-none absolute inset-y-0 left-0 my-auto ml-3.5 h-4 w-4 text-stone-400" />
+                <input
+                  type="text"
+                  name="pincode"
+                  value={addressForm.pincode}
+                  onChange={updateAddressField}
+                  placeholder="e.g. 400001"
+                  required
+                  className="w-full rounded-xl border border-stone-300 bg-white py-2.5 pl-10 pr-3.5 text-sm text-stone-900 transition focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                Country
+              </label>
+              <input
+                type="text"
+                name="country"
+                value={addressForm.country}
+                disabled
+                className="w-full cursor-not-allowed rounded-xl border border-stone-200 bg-stone-100 px-3.5 py-2.5 text-sm text-stone-500"
+              />
+            </div>
           </div>
 
-          <label className="mt-3 flex items-center gap-2 text-sm text-stone-700">
+          <label className="mt-4 inline-flex cursor-pointer items-center gap-2.5">
             <input name="isDefault" type="checkbox" checked={addressForm.isDefault} onChange={updateAddressField} />
-            Make this my default address
+            <span className="text-sm text-stone-600">Set as default address</span>
           </label>
 
           {addressError && <p className="mt-3 text-sm text-red-600">{addressError}</p>}
 
-          <button type="submit" disabled={isSavingAddress} className="mt-4 rounded-sm bg-stone-900 px-4 py-2 text-sm text-stone-50 disabled:cursor-not-allowed disabled:opacity-60">
-            {isSavingAddress ? "Saving..." : "Save address"}
-          </button>
+          <div className="mt-4 flex justify-end">
+            <button type="submit" disabled={isSavingAddress} className="inline-flex items-center gap-2 rounded-xl bg-amber-700 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-amber-800 disabled:cursor-not-allowed disabled:opacity-50">
+              {isSavingAddress ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Check className="h-4 w-4" />
+                  Save address
+                </>
+              )}
+            </button>
+          </div>
         </form>
       )}
 

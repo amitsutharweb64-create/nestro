@@ -61,7 +61,7 @@ export default function SigninPage() {
       if (response.data.success) {
         // Save token to frontend cookie for server-side profile access
         if (response.data.token) {
-          document.cookie = `token=${response.data.token}; path=/; max-age=86400; SameSite=Lax`;
+          document.cookie = `token=${response.data.token}; path=/; max-age=3600; SameSite=Lax`;
         }
 
         try {
@@ -207,10 +207,10 @@ export default function SigninPage() {
                 </label>
 
                 <Link
-                  href="/forgot_password"
+                  href="/contact"
                   className="text-xs font-medium text-gray-600 hover:text-black hover:underline"
                 >
-                  Forgot Password?
+                  Need sign-in help?
                 </Link>
               </div>
 

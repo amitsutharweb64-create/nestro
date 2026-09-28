@@ -4,14 +4,14 @@ import { Instagram, MessageCircle } from "lucide-react";
 const footerLinks = {
   Company: [
     { label: "Our Story", href: "/about" },
-    { label: "Sustainability", href: "/sustainability" },
-    { label: "Showrooms", href: "/showrooms" },
-    { label: "Careers", href: "/careers" },
+    { label: "Sustainability", href: "/about" },
+    { label: "Showrooms", href: "/store" },
+    { label: "Careers", href: "/contact" },
   ],
   Support: [
     { label: "Track Order", href: "/track-order" },
-    { label: "Returns & Exchange", href: "/returns" },
-    { label: "Assembly Help", href: "/assembly-help" },
+    { label: "Returns & Exchange", href: "/contact" },
+    { label: "Assembly Help", href: "/contact" },
     { label: "Contact Us", href: "/contact" },
   ],
 };
@@ -48,7 +48,7 @@ export default function Footer() {
           </h4>
           <ul className="mt-4 space-y-3">
             {footerLinks.Company.map((link) => (
-              <li key={link.href}>
+              <li key={`${link.href}-${link.label}`}>
                 <Link
                   href={link.href}
                   className="text-sm text-stone-400 transition-colors hover:text-amber-500"
@@ -67,7 +67,7 @@ export default function Footer() {
           </h4>
           <ul className="mt-4 space-y-3">
             {footerLinks.Support.map((link) => (
-              <li key={link.href}>
+              <li key={`${link.href}-${link.label}`}>
                 <Link
                   href={link.href}
                   className="text-sm text-stone-400 transition-colors hover:text-amber-500"
@@ -106,16 +106,8 @@ export default function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-6 text-xs text-stone-500 sm:flex-row lg:px-10">
           <p>© 2026 Nestro. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <Link href="/privacy" className="transition-colors hover:text-amber-500">
-              Privacy
-            </Link>
-            <span className="text-stone-700">·</span>
-            <Link href="/terms" className="transition-colors hover:text-amber-500">
-              Terms
-            </Link>
-            <span className="text-stone-700">·</span>
-            <Link href="/sitemap" className="transition-colors hover:text-amber-500">
-              Sitemap
+            <Link href="/contact" className="transition-colors hover:text-amber-500">
+              Policy questions? Contact us
             </Link>
           </div>
         </div>
