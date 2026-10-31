@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Nestro Full-Stack Architecture",
+    "subtitle": "Source-backed overview of the Next.js storefront/admin app and Express/Mongoose API",
+    "locale": "en",
+    "output": "nestro-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/amitsutharweb64-create/nestro.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "59be8d0c505932fceb033734472c49b5acf306f6"
+    },
+    "views": [
+      { "id": "frontend", "label": "Frontend", "focus": ["shopper", "storefront", "admin"], "note": "Next.js route groups, shared UI, Redux cart state" },
+      { "id": "backend", "label": "Backend", "focus": ["api", "routes", "auth"], "note": "Express bootstrap, middleware, controllers, and route registrations" },
+      { "id": "api-routes", "label": "API routes", "focus": ["routes", "storefront", "admin"], "note": "Mounted /api/category, /room-type, /product, /user, /cart, /order, /contact" },
+      { "id": "database", "label": "Database models", "focus": ["models", "mongo", "cloudinary"], "note": "Mongoose models and media persistence path" },
+      { "id": "authentication", "label": "Authentication", "focus": ["auth", "auth-middleware", "email", "storefront"], "note": "OTP registration, JWT cookie/Bearer verification, and role authorization" }
+    ],
+    "legend": {
+      "mode": "all",
+      "entries": {
+        "frontend": { "label": "Frontend", "visible": true },
+        "backend": { "label": "Backend", "visible": true },
+        "database": { "label": "Database", "visible": true },
+        "cloud": { "label": "External service", "visible": true },
+        "security": { "label": "Security", "visible": true },
+        "external": { "label": "Actor", "visible": true }
+      }
+    }
+  },
+  "components": [
+    { "id": "shopper", "type": "external", "label": "Shopper / admin user", "sublabel": "Browser", "icon": "person", "pos": [20, 300], "size": [150, 64], "sources": [{ "path": "frontend/src/app/(website_pages)/layout.jsx", "line": 23, "end_line": 46, "label": "website shell" }, { "path": "frontend/src/app/(admin_pages)/layout.jsx", "line": 23, "end_line": 38, "label": "admin shell" }] },
+    { "id": "storefront", "type": "frontend", "label": "Next.js storefront", "sublabel": "website route group + Redux cart", "icon": "frontend", "pos": [180, 300], "size": [190, 78], "sources": [{ "path": "frontend/src/app/(website_pages)/layout.jsx", "line": 23, "end_line": 46, "label": "website layout" }, { "path": "frontend/src/redux/StoreProvider.jsx", "line": 1, "end_line": 13, "label": "state provider" }, { "path": "frontend/src/app/(website_pages)/store/page.jsx", "line": 1, "end_line": 37, "label": "store page" }] },
+    { "id": "admin", "type": "frontend", "label": "Admin dashboard", "sublabel": "Sidebar + Header + CRUD pages", "icon": "briefcase", "pos": [120, 500], "size": [190, 78], "sources": [{ "path": "frontend/src/app/(admin_pages)/layout.jsx", "line": 23, "end_line": 38, "label": "admin layout" }, { "path": "frontend/src/app/(admin_pages)/admin/product/page.jsx", "line": 1, "end_line": 35, "label": "product management" }, { "path": "frontend/src/app/(admin_pages)/admin/order/page.jsx", "line": 1, "end_line": 35, "label": "order management" }] },
+    { "id": "api", "type": "backend", "label": "Express API", "sublabel": "PORT || 5000; JSON, CORS, cookies", "icon": "backend", "pos": [320, 420], "size": [190, 78], "sources": [{ "path": "Backend/src/index.js", "line": 22, "end_line": 42, "label": "bootstrap + middleware" }, { "path": "Backend/src/index.js", "line": 57, "end_line": 63, "label": "route mounting" }] },
+    { "id": "routes", "type": "backend", "label": "API route modules", "sublabel": "7 mounted route modules", "icon": "backend", "pos": [535, 360], "size": [190, 84], "sources": [{ "path": "Backend/src/index.js", "line": 57, "end_line": 63, "label": "mounted prefixes" }, { "path": "Backend/src/routers/product.router.js", "line": 5, "end_line": 13, "label": "product endpoints" }, { "path": "Backend/src/routers/user.router.js", "line": 15, "end_line": 22, "label": "user endpoints" }] },
+    { "id": "auth", "type": "security", "label": "User auth controller", "sublabel": "OTP verification + JWT cookie", "icon": "security", "pos": [300, 150], "size": [190, 78], "sources": [{ "path": "Backend/src/controllers/user.controller.js", "line": 34, "end_line": 63, "label": "OTP issuance" }, { "path": "Backend/src/controllers/user.controller.js", "line": 76, "end_line": 145, "label": "OTP verify + token" }] },
+    { "id": "auth-middleware", "type": "security", "label": "protect / authorized", "sublabel": "cookie or Authorization header; role gate", "icon": "security", "pos": [530, 150], "size": [225, 78], "sources": [{ "path": "Backend/src/middlewares/auth.js", "line": 4, "end_line": 57, "label": "token verification" }, { "path": "Backend/src/middlewares/auth.js", "line": 62, "end_line": 88, "label": "role authorization" }] },
+    { "id": "mongo", "type": "database", "label": "MongoDB", "sublabel": "MONGO_URI via Mongoose", "icon": "database", "pos": [750, 360], "size": [170, 72], "sources": [{ "path": "Backend/src/config/db.js", "line": 3, "end_line": 13, "label": "database connection" }] },
+    { "id": "models", "type": "database", "label": "Mongoose model layer", "sublabel": "7 domain models", "icon": "database", "pos": [530, 570], "size": [225, 72], "sources": [{ "path": "Backend/src/models/user.model.js", "line": 3, "end_line": 109, "label": "user model" }, { "path": "Backend/src/models/order.model.js", "line": 29, "end_line": 123, "label": "order model" }, { "path": "Backend/src/models/product.model.js", "line": 3, "end_line": 149, "label": "product model" }] },
+    { "id": "category-model", "type": "database", "label": "Category", "sublabel": "catgories collection", "pos": [360, 700], "size": [150, 62], "sources": [{ "path": "Backend/src/models/category.model.js", "line": 3, "end_line": 30, "label": "schema + model" }] },
+    { "id": "room-model", "type": "database", "label": "Room", "sublabel": "rooms collection", "pos": [360, 790], "size": [150, 62], "sources": [{ "path": "Backend/src/models/room.model.js", "line": 3, "end_line": 30, "label": "schema + model" }] },
+    { "id": "product-model", "type": "database", "label": "Product", "sublabel": "Product collection", "pos": [540, 700], "size": [150, 62], "sources": [{ "path": "Backend/src/models/product.model.js", "line": 3, "end_line": 149, "label": "schema + model" }] },
+    { "id": "user-model", "type": "database", "label": "User", "sublabel": "User collection + OTP fields", "pos": [700, 700], "size": [170, 62], "sources": [{ "path": "Backend/src/models/user.model.js", "line": 3, "end_line": 109, "label": "schema + model" }] },
+    { "id": "cart-model", "type": "database", "label": "Cart", "sublabel": "cart collection", "pos": [810, 570], "size": [150, 62], "sources": [{ "path": "Backend/src/models/cart.model.js", "line": 3, "end_line": 33, "label": "schema + model" }] },
+    { "id": "order-model", "type": "database", "label": "Order", "sublabel": "payment fields + items", "pos": [700, 800], "size": [150, 62], "sources": [{ "path": "Backend/src/models/order.model.js", "line": 29, "end_line": 123, "label": "schema + model" }] },
+    { "id": "contact-model", "type": "database", "label": "Contact", "sublabel": "inquiry collection", "pos": [300, 870], "size": [150, 62], "sources": [{ "path": "Backend/src/models/contact.model.js", "line": 3, "end_line": 42, "label": "schema + model" }] },
+    { "id": "cloudinary", "type": "cloud", "label": "Cloudinary", "sublabel": "uploaded images", "icon": "cloud", "pos": [580, 870], "size": [170, 62], "sources": [{ "path": "Backend/src/config/cloudinary.js", "line": 3, "end_line": 14, "label": "provider config" }, { "path": "Backend/src/middlewares/upload.js", "line": 3, "end_line": 18, "label": "multer storage" }] },
+    { "id": "razorpay", "type": "cloud", "label": "Razorpay", "sublabel": "order creation + signature", "icon": "cloud", "pos": [850, 480], "size": [170, 62], "sources": [{ "path": "Backend/src/controllers/order.controller.js", "line": 249, "end_line": 266, "label": "payment order" }, { "path": "Backend/src/controllers/order.controller.js", "line": 278, "end_line": 312, "label": "signature verification" }] },
+    { "id": "email", "type": "cloud", "label": "Brevo / Gmail", "sublabel": "OTP delivery", "icon": "cloud", "pos": [20, 150], "size": [170, 62], "sources": [{ "path": "Backend/src/utils/sendOtpmail.js", "line": 3, "end_line": 58, "label": "Brevo then Gmail fallback" }] }
+  ],
+  "connections": [
+    { "id": "shopper-storefront", "from": "shopper", "to": "storefront", "label": "browse / checkout", "variant": "emphasis" },
+    { "id": "shopper-admin", "from": "shopper", "to": "admin", "label": "manage catalog / orders", "variant": "emphasis" },
+    { "id": "storefront-api", "from": "storefront", "to": "api", "label": "Axios + credentials", "variant": "emphasis" },
+    { "id": "admin-api", "from": "admin", "to": "api", "label": "Axios CRUD calls", "variant": "emphasis" },
+    { "id": "api-routes", "from": "api", "to": "routes" },
+    { "id": "auth-routes", "from": "auth", "to": "routes", "label": "register / login / verify_otp", "variant": "security" },
+    { "id": "route-auth", "from": "routes", "to": "auth-middleware", "label": "protect + role checks", "variant": "security", "fromSide": "top", "toSide": "bottom" },
+    { "id": "auth-storefront", "from": "storefront", "to": "auth", "label": "get-me / token cookie", "variant": "security", "fromSide": "top", "toSide": "bottom" },
+    { "id": "routes-models", "from": "routes", "to": "models", "label": "controllers read / write", "fromSide": "bottom", "toSide": "top" },
+    { "id": "models-mongo", "from": "models", "to": "mongo", "label": "Mongoose persistence" },
+    { "id": "models-category", "from": "models", "to": "category-model" },
+    { "id": "models-room", "from": "models", "to": "room-model" },
+    { "id": "models-product", "from": "models", "to": "product-model" },
+    { "id": "models-user", "from": "models", "to": "user-model" },
+    { "id": "models-cart", "from": "models", "to": "cart-model" },
+    { "id": "models-order", "from": "models", "to": "order-model" },
+    { "id": "models-contact", "from": "models", "to": "contact-model" },
+    { "id": "routes-cloudinary", "from": "routes", "to": "cloudinary", "label": "multipart image uploads", "variant": "dashed" },
+    { "id": "auth-email", "from": "auth", "to": "email", "label": "send OTP", "variant": "dashed" },
+    { "id": "routes-razorpay", "from": "routes", "to": "razorpay", "label": "create / verify payment", "variant": "dashed" },
+    { "id": "razorpay-order", "from": "razorpay", "to": "order-model", "label": "payment IDs", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Frontend architecture", "items": ["Next.js App Router route groups split website, auth, and admin surfaces.", "Website layout loads profile with getme and wraps pages in StoreProvider; admin layout composes Sidebar, Header, and Toaster.", "Axios uses NEXT_PUBLIC_API_BASE_URL, withCredentials, and a browser token interceptor."] },
+    { "dot": "violet", "title": "API route map", "items": ["/api/category: list, detail, create, edit, status, delete.", "/api/room-type: list, detail, create, edit, status, delete.", "/api/product: list, detail, create, edit, status, flag, images.", "/api/user, /api/cart, /api/order, /api/contact are mounted in Backend/src/index.js; see the API routes focus for protected operations."] },
+    { "dot": "emerald", "title": "Authentication flow", "items": ["Register/login controllers generate OTPs and persist expiry; sendOtpmail uses Brevo when configured, otherwise Gmail/Nodemailer.", "OTP verification signs a JWT and sets the token cookie.", "protect accepts the cookie first, then Authorization, verifies SECRET_KEY, loads the user, and authorized enforces admin/superAdmin roles."] },
+    { "dot": "amber", "title": "Complete data flow", "items": ["Browser -> Next.js storefront or admin -> Axios -> Express route module -> controller -> Mongoose model -> MongoDB.", "Catalog image writes branch through multer-storage-cloudinary to Cloudinary.", "Checkout calls Razorpay order creation and signature verification, then persists payment IDs on Order.", "User-facing auth starts at register/login, branches to OTP email delivery, and returns through JWT cookie/Bearer authorization."] },
+    { "dot": "rose", "title": "Evidence boundary", "items": ["Diagram facts are pinned to committed revision 59be8d0c505932fceb033734472c49b5acf306f6.", "The worktree has local edits in Backend/src/config/db.js and Backend/src/index.js; those edits are not used as committed evidence.", "Deployment hosting, runtime ports beyond the code default, and production database topology are not asserted beyond the inspected source."] }
+  ]
+}

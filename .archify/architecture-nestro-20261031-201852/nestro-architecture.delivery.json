@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "3e213b2e-f956-4126-9d57-eae9e9a7514d",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "C:\\Users\\lenovo\\WSJP129\\backend\\nestro\\.archify\\architecture-nestro-20261031-201852\\candidate.json",
+  "output": "C:\\Users\\lenovo\\WSJP129\\backend\\nestro\\.archify\\architecture-nestro-20261031-201852\\nestro-architecture.html",
+  "specification": {
+    "sha256": "c56bc4da1f6c216024410f38d877474e88e5aafa0f815ae36f34b3a301bfc5e9",
+    "bytes": 13105
+  },
+  "artifact": {
+    "sha256": "a8276102c4f06d6e6aa99121ad80d7e54ea73798125d9cf2e5736b7c1505d8bf",
+    "bytes": 881132
+  }
+}

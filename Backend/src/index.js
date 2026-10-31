@@ -1,3 +1,4 @@
+import dns from "node:dns";
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
@@ -10,6 +11,11 @@ import userRouter from "./routers/user.router.js";
 import cartRouter from "./routers/cart.router.js";
 import orderRouter from "./routers/order.router.js";
 import contactRouter from "./routers/contact.routes.js";
+
+dns.setServers([
+  "1.1.1.1",
+  "8.8.8.8",
+]);
 
 dotenv.config();
 
