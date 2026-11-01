@@ -11,6 +11,8 @@ import userRouter from "./routers/user.router.js";
 import cartRouter from "./routers/cart.router.js";
 import orderRouter from "./routers/order.router.js";
 import contactRouter from "./routers/contact.routes.js";
+import { authLimiter } from "./middlewares/authLimiter.js";
+import {apiLimiter} from "./middlewares/rateLimiter.js";
 
 dns.setServers([
   "1.1.1.1",
@@ -38,7 +40,12 @@ connectDB();
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));  
+
+
+app.use("/api", apiLimiter);  
+app.use("/api/user/login", authLimiter);
+app.use("/api/user/register", authLimiter);
 
 // Chrome DevTools probes this URL while inspecting localhost applications.
 // We do not use automatic workspace discovery, so return an empty success response.
@@ -46,7 +53,8 @@ app.get("/.well-known/appspecific/com.chrome.devtools.json", (req, res) => {
   res.status(204).end();
 });
 
-// Routes
+// Routes  
+
 app.get("/", (req, res) => {
   res.json({
     success: true,
