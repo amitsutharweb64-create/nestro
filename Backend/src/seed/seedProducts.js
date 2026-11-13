@@ -8,9 +8,9 @@ import connectDB from "../config/db.js";
 
 dotenv.config();
 
-// Full-HD Unsplash helper
+// Optimized Unsplash images for product and category listings
 const hd = (id) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1920&q=80`;
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=70`;
 
 // Helper to convert string to URL-friendly slug
 const slugify = (text) =>
